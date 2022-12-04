@@ -1,0 +1,56 @@
+AA:
+  camada_wfs: ide_bhgeo:AREA_ABRANGENCIA_SAUDE
+  arquivo: AREA_ABRANGENCIA_SAUDE.zip
+  colunas:
+    - {
+        nome_original: DISTRITO_S,
+        renomear_para: REGIONAL,
+        datatype: category,
+        ordem: 0,
+      }
+    - {
+        nome_original: NOME_AREA_,
+        renomear_para: AA,
+        datatype: category,
+        ordem: 1,
+      }
+QT:
+  camada_wfs: ide_bhgeo:QUADRA_CTM
+  arquivo: QUADRA_CTM.zip
+  colunas:
+    - { nome_original: CODIGO, renomear_para: QT, datatype: int, ordem: 2 }
+END:
+  camada_wfs: ide_bhgeo:ENDERECO
+  arquivo: ENDERECO.zip
+  colunas:
+    - { nome_original: CEP, renomear_para: CEP, datatype: int, ordem: 3 }
+    - {
+        nome_original: ID_LOGRADO,
+        renomear_para: COD_LOGR,
+        datatype: int,
+        ordem: 4,
+      }
+    - {
+        nome_original: SIGLA_TIPO,
+        renomear_para: TIPOLOGR,
+        datatype: category,
+        ordem: 5,
+      }
+    - {
+        nome_original: NOME_LOGRA,
+        renomear_para: NOMELOGR,
+        datatype: str,
+        ordem: 6,
+      }
+    - {
+        nome_original: NUMERO_IMO,
+        renomear_para: NUM_IMOV,
+        datatype: int,
+        ordem: 7,
+      }
+    - {
+        nome_original: NOME_BAIRR,
+        renomear_para: BAIRRO,
+        datatype: category,
+        ordem: 8,
+      }
