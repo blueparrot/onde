@@ -2,9 +2,26 @@ import os
 import glob
 from typing import Union
 
+import colorama as color
 import inquirer
 from inquirer.themes import GreenPassion
 from halo import Halo
+
+
+def print_title(title: str, width=80, color_back=color.Back.WHITE) -> None:
+    """
+    Prints title centered in a bar of the given width
+    """
+    left_space = (width - len(title)) // 2
+    print(
+        color_back
+        + color.Fore.BLACK
+        + color.Style.BRIGHT
+        + " " * left_space
+        + title
+        + " " * (width - left_space - len(title))
+        + "\n"
+    )
 
 
 def file_selector(
