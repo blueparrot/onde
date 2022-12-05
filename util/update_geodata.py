@@ -142,10 +142,6 @@ if __name__ == "__main__":
             print(exc)
 
     print_title("DOWNLOAD DE CAMADAS DO SERVIDOR WFS")
-    print(
-        "ATENÇÃO: o download dos arquivos pode ser demorado. \n"
-        "Realize este processo com a conexão estável e, se possível, em horários de pouco tráfego. \n"
-    )
 
     try:
         update_shapefiles(GEODATA_FOLDER, config)
