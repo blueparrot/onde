@@ -1,6 +1,7 @@
 import os
 import colorama as color
 import util.cli as cli
+from util.update_geodata import update_all
 
 VERSION = "1.0"
 DISCLAIMER = (
@@ -30,11 +31,12 @@ Autor: João Pedro Costa da Fonseca
 Médico Veterinário, servidor da Secretaria Municipal de Saúde de Belo Horizonte
 no cargo de Técnico Superior de Saúde (BM 88183-3)
 Contato: joao.pfonseca@pbh.gov.br
+================================================================================
 """
 )
 
 
-def main_menu() -> str:
+def action_menu() -> str:
     os.system("cls" if os.name == "nt" else "clear")
     cli.print_title(f"Onde@BH v{VERSION}", color_back=color.Back.GREEN)
     print("Selecione a ação:\n")
@@ -47,7 +49,7 @@ def main_menu() -> str:
     )
 
 
-def wfs_alert() -> None:
+def wfs_alert() -> str:
     print(
         color.Fore.YELLOW
         + "Alerta: "
@@ -58,25 +60,32 @@ def wfs_alert() -> None:
         + "menor tráfego). \n\n"
         + "Prosseguir?\n"
     )
-    option = cli.options("SIM", "NÃO")
-    if option == "NÃO":
-        main_menu()
+    return cli.options("SIM", "NÃO")
+
+
+def start() -> None:
+    color.init(autoreset=True)
+    while True:
+        action_choice = action_menu()
+        if action_choice == "Geocodificar arquivo CSV ou DBF":
+            print("Módulo não implementado")
+            break
+        if action_choice == "Consultar endereço individual":
+            print("Módulo não implementado")
+            break
+        if action_choice == "Atualizar dados geográficos":
+            update_geodata = wfs_alert()
+            if update_geodata == "SIM":
+                update_all()
+        if action_choice == "Exibir aviso legal":
+            os.system("cls" if os.name == "nt" else "clear")
+            cli.print_title("AVISO LEGAL", color_back=color.Back.YELLOW)
+            print(DISCLAIMER)
+            input("Pressione <ENTER> para retornar ao menu inicial...")
+        if action_choice == "Sair":
+            quit()
+    color.deinit()
 
 
 if __name__ == "__main__":
-    color.init(autoreset=True)
-    action_choice = main_menu()
-    if action_choice == "Geocodificar arquivo CSV ou DBF":
-        print("Módulo não implementado")
-    if action_choice == "Consultar endereço individual":
-        print("Módulo não implementado")
-    if action_choice == "Atualizar dados geográficos":
-        wfs_alert()
-    if action_choice == "Exibir aviso legal":
-        os.system("cls" if os.name == "nt" else "clear")
-        cli.print_title("AVISO LEGAL", color_back=color.Back.YELLOW)
-        print(DISCLAIMER)
-    if action_choice == "Sair":
-        quit()
-
-    color.deinit()
+    start()
