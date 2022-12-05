@@ -5,33 +5,17 @@ import yaml
 from datetime import datetime
 from typing import Union
 
-import pygeos
+# import pygeos
 import geopandas as gpd
 import colorama as color
 from owslib.wfs import WebFeatureService
 
-import cli
-from logradouro import padronizar_logradouro
+import util.cli as cli
+from util.logradouro import padronizar_logradouro
 
-gpd.options.use_pygeos = True
+# gpd.options.use_pygeos = True
 GEODATA_FOLDER = "./geodata"
 SPINNER_STOP_SYMBOL = color.Fore.GREEN + "✔" + color.Fore.RESET
-
-
-def print_title(title: str, width=80) -> None:
-    """
-    Prints title centered in a bar of the given width
-    """
-    left_space = (width - len(title)) // 2
-    print(
-        color.Back.WHITE
-        + color.Fore.BLACK
-        + color.Style.BRIGHT
-        + " " * left_space
-        + title
-        + " " * (width - left_space - len(title))
-        + "\n"
-    )
 
 
 def update_shapefiles(output_folder: Union[str, os.PathLike], config) -> None:
@@ -130,7 +114,10 @@ def spatial_join(gdf_points, gdf_polygons, text=""):
     return gdf
 
 
-if __name__ == "__main__":
+def update_all() -> None:
+
+    if not os.path.exists(GEODATA_FOLDER):
+        os.makedirs(GEODATA_FOLDER)
 
     os.system("cls" if os.name == "nt" else "clear")
     color.init(autoreset=True)
@@ -141,7 +128,7 @@ if __name__ == "__main__":
         except yaml.YAMLError as exc:
             print(exc)
 
-    print_title("DOWNLOAD DE CAMADAS DO SERVIDOR WFS")
+    cli.print_title("DOWNLOAD DE CAMADAS DO SERVIDOR WFS")
 
     try:
         update_shapefiles(GEODATA_FOLDER, config)
@@ -151,7 +138,7 @@ if __name__ == "__main__":
             + "Falha de conexão com o servidor WFS. Tente novamente mais tarde."
         )
 
-    print_title("PROCESSAMENTO DOS DADOS GEOGRÁFICOS")
+    cli.print_title("PROCESSAMENTO DOS DADOS GEOGRÁFICOS")
 
     # Links addresses to areas
     aa = gdf_loader(
@@ -237,5 +224,9 @@ if __name__ == "__main__":
         + "Dados geográficos atualizados com sucesso!"
         + color.Fore.RESET
     )
-
     color.deinit()
+    input("\nPressione <ENTER> para retornar ao menu inicial...")
+
+
+if __name__ == "__main__":
+    update_all()

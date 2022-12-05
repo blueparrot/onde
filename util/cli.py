@@ -20,6 +20,7 @@ def print_title(title: str, width=80, color_back=color.Back.WHITE) -> None:
         + " " * left_space
         + title
         + " " * (width - left_space - len(title))
+        + color.Style.RESET_ALL
         + "\n"
     )
 
