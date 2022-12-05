@@ -65,6 +65,12 @@ def wfs_alert() -> str:
 
 def start() -> None:
     color.init(autoreset=True)
+
+    DEFAULT_FOLDERS = ["./entrada", "./geodata", "./resultado"]
+    for folder in DEFAULT_FOLDERS:
+        if not os.path.exists(folder):
+            os.makedirs(folder)
+
     while True:
         action_choice = action_menu()
         if action_choice == "Geocodificar arquivo CSV ou DBF":
