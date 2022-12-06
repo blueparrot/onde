@@ -11,7 +11,7 @@ import colorama as color
 from owslib.wfs import WebFeatureService
 
 import util.cli as cli
-from util.logradouro import padronizar_logradouro
+from util.street_names import standardize_street_names
 
 # gpd.options.use_pygeos = True
 ABSOLUTE_PATH = os.path.dirname(__file__)
@@ -206,7 +206,7 @@ def update_all() -> None:
     sp = cli.spinner("Padronizando nomes de logradouros")
     sp.start()
     end["NOMELOGR"] = end.apply(
-        lambda row: padronizar_logradouro(row["NOMELOGR"]), axis=1
+        lambda row: standardize_street_names(row["NOMELOGR"]), axis=1
     )
     sp.stop_and_persist(symbol=SPINNER_STOP_SYMBOL)
 

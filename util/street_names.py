@@ -1,24 +1,24 @@
 import unicodedata
 
 
-def apagar_preposicoes(texto):
+def delete_prepositions(text):
     """
-    Remove as preposições "DE, DO, DA, DOS, DAS" do texto de entrada.
+    Delete common prepositions
     """
-    lista = texto.split()
-    preposicoes = ("DE", "DO", "DA", "DOS", "DAS")
-    for p in preposicoes:
-        while p in lista:
-            lista.remove(p)
-    return " ".join(lista)
+    chunks = text.split()
+    prep = ("DE", "DO", "DA", "DOS", "DAS")
+    for p in prep:
+        while p in chunks:
+            chunks.remove(p)
+    return " ".join(chunks)
 
 
-def apagar_tipo_logradouro(texto):
+def delete_street_type(text):
     """
-    Remove os termos que indicam tipo de logradouro do início do texto de entrada.
+    Remove common street *types* from the street name
     """
-    lista = texto.split()
-    tipos = (
+    chunks = text.split()
+    street_types = (
         "ALAMEDA",
         "ALA",
         "AVENIDA",
@@ -37,18 +37,18 @@ def apagar_tipo_logradouro(texto):
         "TRAVESSA",
         "TRV",
     )
-    if lista[0] in tipos:
-        del lista[0]
-    return " ".join(lista)
+    if chunks[0] in street_types:
+        del chunks[0]
+    return " ".join(chunks)
 
 
-def converter_abreviacoes(texto):
+def expand_abreviations(text):
     """
-    Converte abreviações comuns em palavras completas.
+    Expand common abreviations in street names, as they are found in the address database
     """
-    if len(texto) == 0:
-        return texto
-    lista = texto.split()
+    if len(text) == 0:
+        return text
+    chunks = text.split()
     abrev = {
         "ALM": "ALMIRANTE",
         "ARQ": "ARQUITETO",
@@ -91,16 +91,14 @@ def converter_abreviacoes(texto):
         "TEN": "TENENTE",
         "VER": "VEREADOR",
     }
-    if lista[0] in abrev.keys():
-        lista[0] = abrev[lista[0]]
-    return " ".join(lista)
+    if chunks[0] in abrev.keys():
+        chunks[0] = abrev[chunks[0]]
+    return " ".join(chunks)
 
 
-def numero_por_extenso(num):
+def number_to_portuguese(num):
     """
-    Interpreta o número representado em algarismos para texto por extenso.
-    Caso o parâmetro de entrada não possa ser interpretado como um número ou seja um valor maior que 999999,
-    a função retorna o mesmo parâmetro sem alterações, apenas convertido em string.
+    Converts digits to numbers expressed in the Portuguese language, as they are found in the address database
     """
     try:
         n = int(num)
@@ -161,7 +159,7 @@ def numero_por_extenso(num):
         n_unidades = n[-3:]
         if int(n) % 1000 == 0:
             return (
-                (numero_por_extenso(n_milhares) + " MIL")
+                (number_to_portuguese(n_milhares) + " MIL")
                 .replace("UM MIL", "MIL")
                 .strip()
             )
@@ -171,10 +169,10 @@ def numero_por_extenso(num):
             pre = ""
         return (
             (
-                numero_por_extenso(n_milhares)
+                number_to_portuguese(n_milhares)
                 + " MIL "
                 + pre
-                + numero_por_extenso(n_unidades)
+                + number_to_portuguese(n_unidades)
             )
             .replace("UM MIL", "MIL")
             .replace("  ", " ")
@@ -202,22 +200,19 @@ def numero_por_extenso(num):
         return texto.strip()
 
 
-def padronizar_logradouro(t):
+def standardize_street_names(t):
     """
-    Função principal do módulo, que padroniza o formato dos nomes dos logradouros para busca no banco de dados.
+    Apply all the standardizations in this module
     """
-    t = t.strip()  # Remove espaços no começo e no fim
-    t = t.upper()  # Converte para maiúsculas
-    t = t.translate(str.maketrans("", "", ",.-'\"():;+/?$°@"))  # Elimina pontuações
+    t = t.strip()
+    t = t.upper()
+    t = t.translate(str.maketrans("", "", ",.-'\"():;+/?$°@"))  # Delete punctuations
     t = "".join(
         c for c in unicodedata.normalize("NFD", t) if unicodedata.category(c) != "Mn"
-    )  # Elimina caracteres especiais
-    # As funçôes a seguir presumem que o texto já foi previamente convertido
-    # em maiúsculas e que caracteres especiais e pontuações foram eliminados.
-    t = apagar_preposicoes(t)  # Apaga preposições
-    t = apagar_tipo_logradouro(t)  # Apaga tipo de logradouro
-    t = converter_abreviacoes(t)  # Converte abreviações comuns em palavras completas
-    # O código a seguir identifica dígitos no texto e os converte para números escritos por extenso
-    lista = t.split()
-    lista = [numero_por_extenso(p) if p.isdigit() else p for p in lista]
-    return " ".join(lista)
+    )  # Delete special characters
+    t = delete_prepositions(t)
+    t = delete_street_type(t)
+    t = expand_abreviations(t)
+    chunks = t.split()
+    chunks = [number_to_portuguese(p) if p.isdigit() else p for p in chunks]
+    return " ".join(chunks)
