@@ -17,7 +17,7 @@ from util.logradouro import padronizar_logradouro
 ABSOLUTE_PATH = os.path.dirname(__file__)
 GEODATA_FOLDER = os.path.join(ABSOLUTE_PATH, "..", "geodata")
 YAML_FILE = os.path.join(ABSOLUTE_PATH, "geodata.yaml")
-SPINNER_STOP_SYMBOL = color.Fore.GREEN + "✔" + color.Fore.RESET
+SPINNER_STOP_SYMBOL = color.Fore.GREEN + "  v" + color.Fore.RESET
 
 
 def update_shapefiles(output_folder: Union[str, os.PathLike], config) -> None:

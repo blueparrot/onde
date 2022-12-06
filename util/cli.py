@@ -8,6 +8,17 @@ from inquirer.themes import GreenPassion
 from halo import Halo
 
 
+class CustomTheme(GreenPassion):
+    """
+    Custom inquirer theme fixing problems with Windows Command Prompt
+    """
+
+    def __init__(self):
+        super().__init__()
+        self.Checkbox.selection_icon = ">"
+        self.List.selection_cursor = ">"
+
+
 def print_title(title: str, width=80, color_back=color.Back.WHITE) -> None:
     """
     Prints title centered in a bar of the given width
@@ -47,13 +58,13 @@ def file_selector(
             "arquivo", message="Escolha o arquivo", choices=sorted(file_choices)
         ),
     ]
-    resposta = inquirer.prompt(q, theme=GreenPassion())
+    resposta = inquirer.prompt(q, theme=CustomTheme())
     return os.path.join(folder, resposta["arquivo"])
 
 
 def options(*option_list: str) -> str:
     q = [inquirer.List("opt", choices=option_list)]
-    return inquirer.prompt(q, theme=GreenPassion())["opt"]
+    return inquirer.prompt(q, theme=CustomTheme())["opt"]
 
 
 def spinner(text: str):
@@ -63,8 +74,8 @@ def spinner(text: str):
     return Halo(
         text=text,
         spinner={
-            "interval": 80,
-            "frames": ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"],
+            "interval": 200,
+            "frames": [".  ", ".. ", "...", " ..", "  .", "   "],
         },
         color="green",
     )
