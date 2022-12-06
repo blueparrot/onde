@@ -1,5 +1,7 @@
 import os
 import colorama as color
+
+import geocodificar
 import util.cli as cli
 from util.update_geodata import update_all
 
@@ -33,6 +35,7 @@ no cargo de Técnico Superior de Saúde (BM 88183-3)
 Contato: joao.pfonseca@pbh.gov.br
 """
 )
+ABSOLUTE_PATH = os.path.dirname(__file__)
 
 
 def action_menu() -> str:
@@ -62,9 +65,30 @@ def wfs_alert() -> str:
     return cli.options("SIM", "NÃO")
 
 
+def datafile_exists() -> bool:
+    if os.path.isfile(os.path.join(ABSOLUTE_PATH, "geodata", "base_enderecos.csv")):
+        return True
+    else:
+        return False
+
+
+def datafile_alert() -> None:
+    print(
+        color.Fore.YELLOW
+        + "Alerta: "
+        + color.Fore.RESET
+        + "O arquivo com a base de endereços não foi detectado. \n"
+        + "É necessário executar a ação "
+        + color.Fore.GREEN
+        + "*Atualizar dados geográficos* "
+        + color.Fore.RESET
+        + "ao menos \numa vez para preparar o ambiente deste programa. \n"
+    )
+    input("Pressione <ENTER> para continuar...")
+
+
 def start() -> None:
     color.init(autoreset=True)
-    ABSOLUTE_PATH = os.path.dirname(__file__)
     DEFAULT_FOLDERS = [
         os.path.join(ABSOLUTE_PATH, "entrada"),
         os.path.join(ABSOLUTE_PATH, "geodata"),
@@ -78,11 +102,19 @@ def start() -> None:
     while True:
         action_choice = action_menu()
         if action_choice == "Geocodificar arquivo CSV ou DBF":
-            print("Módulo não implementado")
-            break
+            if datafile_exists():
+                print("Arquivo")
+                geocodificar.arquivo()
+                break
+            else:
+                datafile_alert()
         if action_choice == "Consultar endereço individual":
-            print("Módulo não implementado")
-            break
+            if datafile_exists():
+                print("Individual")
+                geocodificar.individual()
+                break
+            else:
+                datafile_alert()
         if action_choice == "Atualizar dados geográficos":
             update_geodata = wfs_alert()
             if update_geodata == "SIM":
