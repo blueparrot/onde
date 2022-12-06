@@ -5,17 +5,22 @@ from typing import Union
 import colorama as color
 import inquirer
 from inquirer.themes import GreenPassion
+from blessed import Terminal
 from halo import Halo
+
+term = Terminal()
 
 
 class CustomTheme(GreenPassion):
     """
-    Custom inquirer theme fixing problems with Windows Command Prompt
+    Custom inquirer theme compatible with Windows Command Prompt
     """
 
     def __init__(self):
         super().__init__()
+        self.Checkbox.selection_color = term.black_on_green
         self.Checkbox.selection_icon = ">"
+        self.List.selection_color = term.black_on_green
         self.List.selection_cursor = ">"
 
 
