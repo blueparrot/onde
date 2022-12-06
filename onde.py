@@ -88,6 +88,8 @@ def datafile_alert() -> None:
 
 
 def start() -> None:
+    os.system("cls" if os.name == "nt" else "clear")
+    os.system("mode con: cols=80 lines=30")
     color.init(autoreset=True)
     DEFAULT_FOLDERS = [
         os.path.join(ABSOLUTE_PATH, "entrada"),
