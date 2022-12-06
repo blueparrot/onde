@@ -1,6 +1,6 @@
 def single_address():
-    pass
+    input("...")
 
 
 def file():
-    pass
+    input("...")
