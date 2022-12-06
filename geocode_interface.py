@@ -1,6 +1,6 @@
-def individual():
+def single_address():
     pass
 
 
-def arquivo():
+def file():
     pass

@@ -1,7 +1,7 @@
 import os
 import colorama as color
 
-import geocodificar
+import geocode_interface
 import util.cli as cli
 from util.update_geodata import update_all
 
@@ -112,15 +112,15 @@ def start() -> None:
         if action_choice == "Geocodificar arquivo CSV ou DBF":
             if datafile_exists():
                 print("Arquivo")
-                geocodificar.arquivo()
-                break
+                geocode_interface.file()
+                input("...")
             else:
                 datafile_alert()
         if action_choice == "Consultar endereço individual":
             if datafile_exists():
                 print("Individual")
-                geocodificar.individual()
-                break
+                geocode_interface.single_address()
+                input("...")
             else:
                 datafile_alert()
         if action_choice == "Atualizar dados geográficos":
