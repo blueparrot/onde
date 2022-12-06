@@ -24,15 +24,16 @@ class CustomTheme(GreenPassion):
         self.List.selection_cursor = ">"
 
 
-def print_title(title: str, width=80, color_back=color.Back.WHITE) -> None:
+def print_title(
+    title: str, width=80, color_fore=color.Fore.BLACK, color_back=color.Back.WHITE
+) -> None:
     """
     Prints title centered in a bar of the given width
     """
     left_space = (width - len(title)) // 2
     print(
         color_back
-        + color.Fore.BLACK
-        # + color.Style.BRIGHT
+        + color_fore
         + " " * left_space
         + title
         + " " * (width - left_space - len(title))
