@@ -18,7 +18,7 @@ Empresa de Informática e Informação do Município de Belo Horizonte (PRODABEL
 mas nem a Prefeitura Municipal de Belo Horizonte nem a PRODABEL tem qualquer
 responsabilidade pelo software em si. Trata-se de um projeto pessoal,
 desenvolvido individualmente pelo autor em seu tempo livre (com eventuais
-contribuições que possam vir a ser livremente propostas por outros
+contribuições voluntárias que possam vir a ser propostas por outros
 programadores, em se tratando de um projeto de código aberto sob a licença
 "GNU General Public License v3.0").
 
@@ -113,14 +113,12 @@ def start() -> None:
             if datafile_exists():
                 print("Arquivo")
                 geocode_interface.file()
-                input("...")
             else:
                 datafile_alert()
         if action_choice == "Consultar endereço individual":
             if datafile_exists():
                 print("Individual")
                 geocode_interface.single_address()
-                input("...")
             else:
                 datafile_alert()
         if action_choice == "Atualizar dados geográficos":
