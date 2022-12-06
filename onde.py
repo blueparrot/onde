@@ -23,8 +23,8 @@ programadores, em se tratando de um projeto de código aberto sob a licença
 "GNU General Public License v3.0").
 
 Alertas sobre "bugs", sugestões e contribuições são muito bem vindos, mas o
-autor reitera que o desenvolvimento, suporte e manutenção do projeto não fazem
-parte de suas atribuições profissionais.
+autor reitera que o desenvolvimento, suporte e manutenção deste projeto não
+fazem parte de suas atribuições profissionais.
 
 O código-fonte está disponível em: https://github.com/blueparrot/onde
 
@@ -53,14 +53,20 @@ def action_menu() -> str:
 
 def wfs_alert() -> str:
     print(
-        color.Fore.YELLOW
-        + "Alerta: "
-        + color.Fore.RESET
-        + "Se a conexão com a internet ou o servidor de geosserviços estiverem \n"
-        + "instáveis, este script pode ser interrompido com mensagens de erro. Caso isso \n"
-        + "aconteça, tente novamente em outra ocasião (de preferência em horários de \n"
-        + "menor tráfego). \n\n"
-        + "Prosseguir?\n"
+        (
+            color.Fore.YELLOW
+            + "Alerta: "
+            + color.Fore.RESET
+            + """Este processo pode ser demorado, mas só precisa ser feito se esta for
+uma instalação nova do script ou se houver mudanças significativas na base
+geográfica da cidade.
+
+Se a conexão com a internet ou o servidor de geosserviços estiverem instáveis,
+o script pode ser interrompido com mensagens de erro. Neste caso, tente
+novamente em outra ocasião (de preferência em horários de menor tráfego).
+
+Prosseguir?\n"""
+        )
     )
     return cli.options("SIM", "NÃO")
 
@@ -77,12 +83,12 @@ def datafile_alert() -> None:
         color.Fore.YELLOW
         + "Alerta: "
         + color.Fore.RESET
-        + "O arquivo com a base de endereços não foi detectado. \n"
+        + "A base de endereços não foi detectada neste computador. \n"
         + "É necessário executar a ação "
         + color.Fore.GREEN
         + "*Atualizar dados geográficos* "
         + color.Fore.RESET
-        + "ao menos \numa vez para preparar o ambiente deste programa. \n"
+        + "ao menos uma vez \npara preparar o ambiente deste programa. \n"
     )
     input("Pressione <ENTER> para continuar...")
 
