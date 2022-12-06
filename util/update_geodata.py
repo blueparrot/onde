@@ -43,7 +43,7 @@ def update_shapefiles(output_folder: Union[str, os.PathLike], config) -> None:
                 + color.Style.BRIGHT
                 + f"{filename[:-4]}"
                 + color.Fore.RESET
-                + f" foi atualizada em {mod_date}. Atualizar novamente? "
+                + f" foi atualizada em {mod_date}.\nAtualizar novamente? "
             )
             if cli.options("SIM", "NÃO") == "NÃO":
                 print(
