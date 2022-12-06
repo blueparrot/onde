@@ -40,7 +40,10 @@ ABSOLUTE_PATH = os.path.dirname(__file__)
 
 def action_menu() -> str:
     os.system("cls" if os.name == "nt" else "clear")
-    cli.print_title(f"Onde@BH v{VERSION}", color_back=color.Back.GREEN)
+    cli.print_title(
+        f"Onde@BH v{VERSION} - Geocodificador de endereços em Belo Horizonte",
+        color_back=color.Back.GREEN,
+    )
     print("Selecione a ação:\n")
     return cli.options(
         "Geocodificar arquivo CSV ou DBF",
