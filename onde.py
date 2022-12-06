@@ -31,7 +31,6 @@ Autor: João Pedro Costa da Fonseca
 Médico Veterinário, servidor da Secretaria Municipal de Saúde de Belo Horizonte
 no cargo de Técnico Superior de Saúde (BM 88183-3)
 Contato: joao.pfonseca@pbh.gov.br
-================================================================================
 """
 )
 
@@ -65,8 +64,13 @@ def wfs_alert() -> str:
 
 def start() -> None:
     color.init(autoreset=True)
+    ABSOLUTE_PATH = os.path.dirname(__file__)
+    DEFAULT_FOLDERS = [
+        os.path.join(ABSOLUTE_PATH, "entrada"),
+        os.path.join(ABSOLUTE_PATH, "geodata"),
+        os.path.join(ABSOLUTE_PATH, "resultado"),
+    ]
 
-    DEFAULT_FOLDERS = ["./entrada", "./geodata", "./resultado"]
     for folder in DEFAULT_FOLDERS:
         if not os.path.exists(folder):
             os.makedirs(folder)

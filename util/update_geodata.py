@@ -14,7 +14,9 @@ import util.cli as cli
 from util.logradouro import padronizar_logradouro
 
 # gpd.options.use_pygeos = True
-GEODATA_FOLDER = "./geodata"
+ABSOLUTE_PATH = os.path.dirname(__file__)
+GEODATA_FOLDER = os.path.join(ABSOLUTE_PATH, "..", "geodata")
+YAML_FILE = os.path.join(ABSOLUTE_PATH, "geodata.yaml")
 SPINNER_STOP_SYMBOL = color.Fore.GREEN + "✔" + color.Fore.RESET
 
 
@@ -76,7 +78,7 @@ def update_shapefiles(output_folder: Union[str, os.PathLike], config) -> None:
 
 def gdf_loader(file, cols_dict):
     """
-    Wrapper for the "read_file" method in the GeoPandas module,
+    Presets for the "read_file" method in the GeoPandas module,
     with the option to specify the columns to be INCLUDED
     """
     include_cols = [c["nome_original"] for c in cols_dict]
@@ -100,7 +102,7 @@ def gdf_loader(file, cols_dict):
 
 def spatial_join(gdf_points, gdf_polygons, text=""):
     """
-    Wrapper for the "sjoin" method in the GeoPandas module
+    Presets for the "sjoin" method in the GeoPandas module
     """
     sp = cli.spinner(text)
     sp.start()
@@ -115,14 +117,16 @@ def spatial_join(gdf_points, gdf_polygons, text=""):
 
 
 def update_all() -> None:
-
+    """
+    Main function
+    """
     if not os.path.exists(GEODATA_FOLDER):
         os.makedirs(GEODATA_FOLDER)
 
     os.system("cls" if os.name == "nt" else "clear")
     color.init(autoreset=True)
 
-    with open("./util/geodata.yaml", "r") as stream:
+    with open(YAML_FILE, "r") as stream:
         try:
             config = yaml.safe_load(stream)
         except yaml.YAMLError as exc:
