@@ -1,5 +1,5 @@
 from fuzzywuzzy import process
-import util.logradouro as logradouro
+from util.street_names import standardize_street_names
 
 # IMPLEMENTAR CACHE DE LOGRADOUROS DO FUZZY
 
@@ -82,7 +82,7 @@ def localizar(df, logradouro, num, area=None, modo="nome"):
 
     # Determina o modo de busca de logradouros
     if modo == "nome":
-        logradouro = logradouro.padronizar_logradouro(logradouro)
+        logradouro = standardize_street_names(logradouro)
         logradouro_selecionado = area_selecionada[
             (area_selecionada["NOME_LOGRA"] == logradouro)
         ]
