@@ -1,7 +1,6 @@
 import gc
 import os
 import requests
-import yaml
 from datetime import datetime
 from typing import Union
 
@@ -18,12 +17,6 @@ from util.street_names import standardize_street_names
 ABSOLUTE_PATH = os.path.dirname(__file__)
 GEODATA_FOLDER = os.path.join(ABSOLUTE_PATH, "..", "geodata")
 SPINNER_STOP_SYMBOL = color.Fore.GREEN + "  v" + color.Fore.RESET
-# YAML_FILE = os.path.join(ABSOLUTE_PATH, "geodata.yaml")
-
-# with open(YAML_FILE, "r") as stream:
-#     generator = yaml.safe_load_all(stream)
-#     server_configuration = generator.__next__()
-#     layer_configuration = generator.__next__()
 
 server_configuration = util.config.server()
 layer_configuration = util.config.layers()
@@ -175,16 +168,6 @@ def update_all() -> None:
     end.drop(["index_right"], axis=1, inplace=True)
 
     # Rearrange data
-    # cols_tuples = sorted(
-    #     [
-    #         (c["ordem"], c["nome_original"], c["renomear_para"], c["datatype"])
-    #         for col in [layer["colunas"] for layer in layer_configuration.values()]
-    #         for c in col
-    #     ]
-    # )
-    # cols_old_names = [e[1] for e in cols_tuples] + ["geometry"]
-    # cols_new_names = [e[2] for e in cols_tuples] + ["geometry"]
-    # cols_datatypes = [e[3] for e in cols_tuples]
     end = end.loc[:, util.config.old_col_names()]
     end.columns = util.config.new_col_names()
 
