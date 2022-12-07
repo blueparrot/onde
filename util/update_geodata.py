@@ -10,6 +10,7 @@ import geopandas as gpd
 import colorama as color
 from owslib.wfs import WebFeatureService
 
+import util.config
 import util.cli as cli
 from util.street_names import standardize_street_names
 
@@ -17,12 +18,15 @@ from util.street_names import standardize_street_names
 ABSOLUTE_PATH = os.path.dirname(__file__)
 GEODATA_FOLDER = os.path.join(ABSOLUTE_PATH, "..", "geodata")
 SPINNER_STOP_SYMBOL = color.Fore.GREEN + "  v" + color.Fore.RESET
-YAML_FILE = os.path.join(ABSOLUTE_PATH, "geodata.yaml")
+# YAML_FILE = os.path.join(ABSOLUTE_PATH, "geodata.yaml")
 
-with open(YAML_FILE, "r") as stream:
-    generator = yaml.safe_load_all(stream)
-    server_configuration = generator.__next__()
-    layer_configuration = generator.__next__()
+# with open(YAML_FILE, "r") as stream:
+#     generator = yaml.safe_load_all(stream)
+#     server_configuration = generator.__next__()
+#     layer_configuration = generator.__next__()
+
+server_configuration = util.config.server()
+layer_configuration = util.config.layers()
 
 
 def update_shapefiles(
@@ -171,18 +175,18 @@ def update_all() -> None:
     end.drop(["index_right"], axis=1, inplace=True)
 
     # Rearrange data
-    cols_tuples = sorted(
-        [
-            (c["ordem"], c["nome_original"], c["renomear_para"], c["datatype"])
-            for col in [layer["colunas"] for layer in layer_configuration.values()]
-            for c in col
-        ]
-    )
-    cols_old_names = [e[1] for e in cols_tuples] + ["geometry"]
-    cols_new_names = [e[2] for e in cols_tuples] + ["geometry"]
-    cols_datatypes = [e[3] for e in cols_tuples]
-    end = end.loc[:, cols_old_names]
-    end.columns = cols_new_names
+    # cols_tuples = sorted(
+    #     [
+    #         (c["ordem"], c["nome_original"], c["renomear_para"], c["datatype"])
+    #         for col in [layer["colunas"] for layer in layer_configuration.values()]
+    #         for c in col
+    #     ]
+    # )
+    # cols_old_names = [e[1] for e in cols_tuples] + ["geometry"]
+    # cols_new_names = [e[2] for e in cols_tuples] + ["geometry"]
+    # cols_datatypes = [e[3] for e in cols_tuples]
+    end = end.loc[:, util.config.old_col_names()]
+    end.columns = util.config.new_col_names()
 
     # Drop empty values or duplicates
     end.dropna(how="any", inplace=True)
@@ -191,7 +195,7 @@ def update_all() -> None:
     # Convert datatypes
     sp = cli.spinner("Convertendo dados")
     sp.start()
-    for col, datatype in zip(cols_new_names, cols_datatypes):
+    for col, datatype in zip(util.config.new_col_names(), util.config.datatypes_list()):
         if datatype != "str":
             end[col] = end[col].astype(datatype)
     sp.stop_and_persist(symbol=SPINNER_STOP_SYMBOL)
