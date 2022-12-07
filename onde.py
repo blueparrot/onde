@@ -3,6 +3,7 @@ import pandas as pd
 import colorama as color
 
 import util.cli as cli
+from util.config import datatypes_dict
 from util.update_geodata import update_all
 
 VERSION = "1.0"
@@ -36,6 +37,12 @@ Contato: joao.pfonseca@pbh.gov.br
 """
 )
 ABSOLUTE_PATH = os.path.dirname(__file__)
+DATA = os.path.join(ABSOLUTE_PATH, "geodata", "base_enderecos.csv")
+if os.path.isfile(DATA):
+    sp = cli.spinner("Carregando base de endereços")
+    sp.start()
+    END = pd.read_csv(DATA, sep=";", dtype=datatypes_dict())
+    sp.stop()
 
 
 def action_menu() -> str:
@@ -96,13 +103,10 @@ def datafile_alert() -> None:
     input("Pressione <ENTER> para continuar...")
 
 
-def load_address_base():
-    df = pd.read_csv(os.path.join(ABSOLUTE_PATH, "geodata", "base_enderecos.csv"))
-    return ""
-
-
 def geocode_single_address():
-    # os.system("cls" if os.name == "nt" else "clear")
+    os.system("cls" if os.name == "nt" else "clear")
+    print(END.head())
+    print(END.dtypes)
 
     input("...")
 
@@ -148,7 +152,6 @@ def start() -> None:
             input("Pressione <ENTER> para retornar ao menu inicial...")
         if action_choice == "Sair":
             quit()
-    color.deinit()
 
 
 if __name__ == "__main__":
