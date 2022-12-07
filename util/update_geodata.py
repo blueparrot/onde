@@ -16,8 +16,8 @@ from util.street_names import standardize_street_names
 # gpd.options.use_pygeos = True
 ABSOLUTE_PATH = os.path.dirname(__file__)
 GEODATA_FOLDER = os.path.join(ABSOLUTE_PATH, "..", "geodata")
-YAML_FILE = os.path.join(ABSOLUTE_PATH, "geodata.yaml")
 SPINNER_STOP_SYMBOL = color.Fore.GREEN + "  v" + color.Fore.RESET
+YAML_FILE = os.path.join(ABSOLUTE_PATH, "geodata.yaml")
 
 with open(YAML_FILE, "r") as stream:
     generator = yaml.safe_load_all(stream)

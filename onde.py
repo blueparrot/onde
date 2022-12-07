@@ -1,4 +1,5 @@
 import os
+import pandas as pd
 import colorama as color
 
 import util.cli as cli
@@ -96,11 +97,12 @@ def datafile_alert() -> None:
 
 
 def load_address_base():
+    df = pd.read_csv(os.path.join(ABSOLUTE_PATH, "geodata", "base_enderecos.csv"))
     return ""
 
 
 def geocode_single_address():
-    os.system("cls" if os.name == "nt" else "clear")
+    # os.system("cls" if os.name == "nt" else "clear")
 
     input("...")
 
