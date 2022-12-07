@@ -19,14 +19,23 @@ GEODATA_FOLDER = os.path.join(ABSOLUTE_PATH, "..", "geodata")
 YAML_FILE = os.path.join(ABSOLUTE_PATH, "geodata.yaml")
 SPINNER_STOP_SYMBOL = color.Fore.GREEN + "  v" + color.Fore.RESET
 
+with open(YAML_FILE, "r") as stream:
+    generator = yaml.safe_load_all(stream)
+    server_configuration = generator.__next__()
+    layer_configuration = generator.__next__()
 
-def update_shapefiles(output_folder: Union[str, os.PathLike], config) -> None:
+
+def update_shapefiles(
+    output_folder: Union[str, os.PathLike], layer_configuration
+) -> None:
     """
     Downloads shapefiles from a WFS server
     """
 
     wfs = WebFeatureService(
-        url="http://bhmap.pbh.gov.br/v2/api/idebhgeo/wfs", version="1.1.0", timeout=300
+        url=server_configuration["wfs_server"],
+        version=server_configuration["wfs_version"],
+        timeout=300,
     )
 
     def save_file(
@@ -72,7 +81,7 @@ def update_shapefiles(output_folder: Union[str, os.PathLike], config) -> None:
             + " atualizada com sucesso\n"
         )
 
-    for layer in config.values():
+    for layer in layer_configuration.values():
         save_file(layer["arquivo"], layer["camada_wfs"], output_folder)
 
 
@@ -125,17 +134,10 @@ def update_all() -> None:
 
     os.system("cls" if os.name == "nt" else "clear")
     color.init(autoreset=True)
-
-    with open(YAML_FILE, "r") as stream:
-        try:
-            config = yaml.safe_load(stream)
-        except yaml.YAMLError as exc:
-            print(exc)
-
     cli.print_title("DOWNLOAD DE CAMADAS DO SERVIDOR WFS")
 
     try:
-        update_shapefiles(GEODATA_FOLDER, config)
+        update_shapefiles(GEODATA_FOLDER, layer_configuration)
     except requests.exceptions.Timeout:
         print(
             color.Fore.RED
@@ -146,12 +148,12 @@ def update_all() -> None:
 
     # Links addresses to areas
     aa = gdf_loader(
-        file=os.path.join(GEODATA_FOLDER, config["AA"]["arquivo"]),
-        cols_dict=config["AA"]["colunas"],
+        file=os.path.join(GEODATA_FOLDER, layer_configuration["AA"]["arquivo"]),
+        cols_dict=layer_configuration["AA"]["colunas"],
     )
     end_raw = gdf_loader(
-        file=os.path.join(GEODATA_FOLDER, config["END"]["arquivo"]),
-        cols_dict=config["END"]["colunas"],
+        file=os.path.join(GEODATA_FOLDER, layer_configuration["END"]["arquivo"]),
+        cols_dict=layer_configuration["END"]["colunas"],
     )
     end_aa = spatial_join(end_raw, aa, f"Associando endereços a áreas de abrangência")
     del [[end_raw, aa]]
@@ -160,8 +162,8 @@ def update_all() -> None:
 
     # Links addresses to city blocks
     qt = gdf_loader(
-        file=os.path.join(GEODATA_FOLDER, config["QT"]["arquivo"]),
-        cols_dict=config["QT"]["colunas"],
+        file=os.path.join(GEODATA_FOLDER, layer_configuration["QT"]["arquivo"]),
+        cols_dict=layer_configuration["QT"]["colunas"],
     )
     end = spatial_join(end_aa, qt, f"Associando endereços a quarteirões")
     del [[end_aa, qt]]
@@ -172,7 +174,7 @@ def update_all() -> None:
     cols_tuples = sorted(
         [
             (c["ordem"], c["nome_original"], c["renomear_para"], c["datatype"])
-            for col in [layer["colunas"] for layer in config.values()]
+            for col in [layer["colunas"] for layer in layer_configuration.values()]
             for c in col
         ]
     )
