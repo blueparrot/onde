@@ -2,9 +2,11 @@ from fuzzywuzzy import process
 from util.street_names import standardize_street_names
 
 # IMPLEMENTAR CACHE DE LOGRADOUROS DO FUZZY
+LIMITE_NUMERO = 50  # Diferença máxima de numeração no imóvel a ser interpolado
+LIMITE_FUZZY = 90  # Diferença máxima no match pelo fuzzywuzzy
 
 
-def localizar(df, logradouro, num, area=None, modo="nome"):
+def geocode(df, logradouro, num, area=None, modo="nome"):
     """
     Localiza as coordenadas geográficas de um dado endereço
 
@@ -22,12 +24,10 @@ def localizar(df, logradouro, num, area=None, modo="nome"):
         > cep : busca o CEP, aceitando apenas correspondência exata
 
     ID_LOGRADO
-    NOME_LOGRA
+    NOMELOGR
     CEP
 
     """
-    LIMITE_NUMERO = 50  # Diferença máxima de numeração no imóvel a ser interpolado
-    LIMITE_FUZZY = 90  # Diferença máxima no match pelo fuzzywuzzy
 
     def interpolar(num, pontos):
         """
@@ -41,28 +41,28 @@ def localizar(df, logradouro, num, area=None, modo="nome"):
         - pontos : Endereços, no mesmo logradouro e de mesma paridade, que estejam mais próximos da numeração buscada
         """
         # Identifica os pontos de referência com maior e menor numeração
-        p_max = pontos[pontos.NUMERO_IMO == pontos.NUMERO_IMO.max()]
-        p_min = pontos[pontos.NUMERO_IMO == pontos.NUMERO_IMO.min()]
+        p_max = pontos[pontos.NUM_IMOV == pontos.NUM_IMOV.max()]
+        p_min = pontos[pontos.NUM_IMOV == pontos.NUM_IMOV.min()]
         # Calcula a diferença de numeração ente os pontos de referência
-        delta_n = p_max.iloc[0]["NUMERO_IMO"] - p_min.iloc[0]["NUMERO_IMO"]
+        delta_n = p_max.iloc[0]["NUM_IMOV"] - p_min.iloc[0]["NUM_IMOV"]
         # Se p_max é igual a p_min, retorna em branco
         if delta_n == 0:
             return {"X": "", "Y": ""}
         # Converte as coordenadas para float e calcula as inclinações em que X e Y variam  de acordo com a variação
         # dos números dos imóveis. Em outras palavras, considera-se que a numeração dos imóveis seria o eixo horizontal
         # e as coordenadas de longitude ou latitude UTM seriam os eixos verticais em uma linha
-        delta_x = float(p_max.iloc[0]["LESTE"].replace(",", ".")) - float(
-            p_min.iloc[0]["LESTE"].replace(",", ".")
+        delta_x = float(p_max.iloc[0]["X"].replace(",", ".")) - float(
+            p_min.iloc[0]["X"].replace(",", ".")
         )
-        delta_y = float(p_max.iloc[0]["NORTE"].replace(",", ".")) - float(
-            p_min.iloc[0]["NORTE"].replace(",", ".")
+        delta_y = float(p_max.iloc[0]["Y"].replace(",", ".")) - float(
+            p_min.iloc[0]["Y"].replace(",", ".")
         )
         inc_x = delta_x / delta_n
         inc_y = delta_y / delta_n
         # Determina as coordenadas do imóvel procurado a partir do ponto de referência com menor numeração
-        dist_n = num - p_min.iloc[0]["NUMERO_IMO"]
-        x = float(p_min.iloc[0]["LESTE"].replace(",", ".")) + (dist_n * inc_x)
-        y = float(p_min.iloc[0]["NORTE"].replace(",", ".")) + (dist_n * inc_y)
+        dist_n = num - p_min.iloc[0]["NUM_IMOV"]
+        x = float(p_min.iloc[0]["X"].replace(",", ".")) + (dist_n * inc_x)
+        y = float(p_min.iloc[0]["Y"].replace(",", ".")) + (dist_n * inc_y)
         # Converte as coordenadas novamente para formato string
         x_str = "{:.3f}".format(x).replace(".", ",")
         y_str = "{:.3f}".format(y).replace(".", ",")
@@ -84,7 +84,7 @@ def localizar(df, logradouro, num, area=None, modo="nome"):
     if modo == "nome":
         logradouro = standardize_street_names(logradouro)
         logradouro_selecionado = area_selecionada[
-            (area_selecionada["NOME_LOGRA"] == logradouro)
+            (area_selecionada["NOMELOGR"] == logradouro)
         ]
     else:
         try:
@@ -108,7 +108,7 @@ def localizar(df, logradouro, num, area=None, modo="nome"):
         if modo != "nome":
             return {"X": "", "Y": "", "GEOLOG": "LOGRADOURO NAO ENCONTRADO"}
         # Quando a busca é pelo nome do logradouro, tenta fazer aproximação
-        lista_logradouros = area_selecionada["NOME_LOGRA"].tolist()
+        lista_logradouros = area_selecionada["NOMELOGR"].tolist()
         logradouro_aproximado = process.extractOne(
             logradouro, choices=lista_logradouros, score_cutoff=LIMITE_FUZZY
         )
@@ -116,20 +116,20 @@ def localizar(df, logradouro, num, area=None, modo="nome"):
             return {"X": "", "Y": "", "GEOLOG": "LOGRADOURO NAO ENCONTRADO"}
         else:
             logradouro_selecionado = area_selecionada[
-                (area_selecionada["NOME_LOGRA"] == logradouro_aproximado[0])
+                (area_selecionada["NOMELOGR"] == logradouro_aproximado[0])
             ]
             texto_log = "LOGRADOURO APROXIMADO / "
 
     # Busca o número do imóvel
-    selecao_imoveis = logradouro_selecionado[
-        logradouro_selecionado["NUMERO_IMO"] == num
-    ]
+    selecao_imoveis = logradouro_selecionado[logradouro_selecionado["NUM_IMOV"] == num]
     if (
         len(selecao_imoveis) > 0
     ):  # Correspondência exata encontrada para o número do imóvel
         return {
-            "X": selecao_imoveis.iloc[0]["LESTE"],
-            "Y": selecao_imoveis.iloc[0]["NORTE"],
+            "REGIONAL": selecao_imoveis.iloc[0]["REGIONAL"],
+            "AA": selecao_imoveis.iloc[0]["AA"],
+            "X": selecao_imoveis.iloc[0]["X"],
+            "Y": selecao_imoveis.iloc[0]["Y"],
             "GEOLOG": texto_log + "NUMERO EXATO",
         }
     else:
@@ -140,17 +140,19 @@ def localizar(df, logradouro, num, area=None, modo="nome"):
             logradouro_selecionado["PAR"] == num_par
         ]
         proximos = selecao_imoveis.iloc[
-            (selecao_imoveis["NUMERO_IMO"] - num).abs().argsort()[:2]
+            (selecao_imoveis["NUM_IMOV"] - num).abs().argsort()[:2]
         ]
         if len(proximos) < 2:
             # Retorna coordenadas em branco se não houver ao menos 2 imóveis para interpolar
             return {
+                "REGIONAL": "",
+                "AA": "",
                 "X": "",
                 "Y": "",
                 "GEOLOG": texto_log + "POUCOS PARAMETROS PARA INTERPOLACAO",
             }
-        elif (abs(proximos.iloc[0]["NUMERO_IMO"] - num) > LIMITE_NUMERO) or (
-            abs(proximos.iloc[1]["NUMERO_IMO"] - num) > LIMITE_NUMERO
+        elif (abs(proximos.iloc[0]["NUM_IMOV"] - num) > LIMITE_NUMERO) or (
+            abs(proximos.iloc[1]["NUM_IMOV"] - num) > LIMITE_NUMERO
         ):
             # Retorna coordenadas em branco se a numeração for muito distante dos mais próximos
             return {"X": "", "Y": "", "GEOLOG": texto_log + "NUMERO MUITO DISTANTE"}
