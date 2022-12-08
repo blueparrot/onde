@@ -78,6 +78,11 @@ def options(*option_list: str) -> str:
     return inquirer.prompt(q, theme=CustomTheme())["opt"]
 
 
+def text_question(question: str) -> str:
+    q = [inquirer.Text("answer", message=question)]
+    return inquirer.prompt(q, theme=CustomTheme())["answer"]
+
+
 def spinner(text: str):
     """
     Presets the spinner in the Halo package

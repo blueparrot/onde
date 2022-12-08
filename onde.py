@@ -44,7 +44,7 @@ if os.path.isfile(DATA):
     sp = cli.spinner("Carregando base de endereços")
     sp.start()
     END = pd.read_csv(DATA, sep=";", dtype=datatypes_dict())
-    unique_streets = END["NOMELOGR"].unique()
+    unique_streets = list(END["NOMELOGR"].sort_values().unique())
     sp.stop()
 
 
@@ -106,13 +106,14 @@ def datafile_alert() -> None:
 def search_single_address():
     clear_screen()
     cli.print_title("PESQUISA INDIVIDUAL DE ENDEREÇOS")
-    logradouro = input("Digite o logradouro: ")
-    numero = input("Número: ")
+    logradouro = cli.text_question("Logradouro")
+    numero = cli.text_question("Número")
     print(geocode(END, logradouro, numero))
     input("...")
 
 
 def geocode_file():
+    clear_screen()
     cli.print_title("GEOCODIFICAR ARQUIVOS")
     input("...")
 

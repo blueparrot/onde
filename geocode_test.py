@@ -12,10 +12,8 @@ if os.path.isfile(ADDRESS_DATA):
     sp = cli.spinner("Carregando base de endereços")
     sp.start()
     END = pd.read_csv(ADDRESS_DATA, sep=";", dtype=datatypes_dict())
-    unique_streets = END["NOMELOGR"].unique()
+    unique_streets = list(END["NOMELOGR"].sort_values().unique())
     sp.stop()
 
-# response = geocode(END, "SILVA LOBO", "1280")
-# print(response)
-
-print(unique_streets)
+response = geocode(END, "SILVA LOBO", "1280")
+print(response)
