@@ -45,8 +45,12 @@ if os.path.isfile(DATA):
     sp.stop()
 
 
-def action_menu() -> str:
+def clear_screen():
     os.system("cls" if os.name == "nt" else "clear")
+
+
+def action_menu() -> str:
+    clear_screen()
     cli.print_title(
         f"Onde@BH v{VERSION} - Geocodificador de endereços em Belo Horizonte",
         color_back=color.Back.GREEN,
@@ -104,7 +108,7 @@ def datafile_alert() -> None:
 
 
 def geocode_single_address():
-    os.system("cls" if os.name == "nt" else "clear")
+    clear_screen()
     print(END.head())
     print(END.dtypes)
 
@@ -116,7 +120,7 @@ def geocode_file():
 
 
 def start() -> None:
-    os.system("cls" if os.name == "nt" else "clear")
+    clear_screen()
     os.system("mode con: cols=80 lines=30")
     color.init(autoreset=True)
     DEFAULT_FOLDERS = [
@@ -145,8 +149,14 @@ def start() -> None:
             update_geodata = wfs_alert()
             if update_geodata == "SIM":
                 update_all()
+                if os.path.isfile(DATA):
+                    clear_screen()
+                    sp = cli.spinner("Carregando a base de endereços atualizada")
+                    sp.start()
+                    END = pd.read_csv(DATA, sep=";", dtype=datatypes_dict())
+                    sp.stop()
         if action_choice == "Exibir aviso legal":
-            os.system("cls" if os.name == "nt" else "clear")
+            clear_screen()
             cli.print_title("AVISO LEGAL", color_back=color.Back.YELLOW)
             print(DISCLAIMER)
             input("Pressione <ENTER> para retornar ao menu inicial...")
