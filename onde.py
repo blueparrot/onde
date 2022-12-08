@@ -5,6 +5,7 @@ import colorama as color
 import util.cli as cli
 from util.config import datatypes_dict
 from util.update_geodata import update_all
+from geocode import geocode
 
 VERSION = "1.0"
 DISCLAIMER = (
@@ -59,7 +60,7 @@ def action_menu() -> str:
     print("Navegue com as setas do teclado e pressione <ENTER> para executar a ação:\n")
     return cli.options(
         "Geocodificar arquivo CSV ou DBF",
-        "Consultar endereço individual",
+        "Pesquisar endereço individual",
         "Atualizar dados geográficos",
         "Exibir aviso legal",
         "Sair",
@@ -101,15 +102,17 @@ def datafile_alert() -> None:
     input("Pressione <ENTER> para continuar...")
 
 
-def geocode_single_address():
+def search_single_address():
     clear_screen()
-    print(END.head())
-    print(END.dtypes)
-
+    cli.print_title("PESQUISA INDIVIDUAL DE ENDEREÇOS")
+    logradouro = input("Digite o logradouro: ")
+    numero = input("Número: ")
+    print(geocode(END, logradouro, numero))
     input("...")
 
 
 def geocode_file():
+    cli.print_title("GEOCODIFICAR ARQUIVOS")
     input("...")
 
 
@@ -134,9 +137,9 @@ def start() -> None:
                 geocode_file()
             else:
                 datafile_alert()
-        if action_choice == "Consultar endereço individual":
+        if action_choice == "Pesquisar endereço individual":
             if os.path.isfile(DATA):
-                geocode_single_address()
+                search_single_address()
             else:
                 datafile_alert()
         if action_choice == "Atualizar dados geográficos":
