@@ -96,16 +96,17 @@ def expand_abreviations(text):
     return " ".join(chunks)
 
 
-def number_to_portuguese(num):
+def num_para_pt(num_str: str) -> str:
     """
     Converts digits to numbers expressed in the Portuguese language, as they are found in the address database
     """
     try:
-        n = int(num)
-        if n > 999999:
-            return str(num)
+        num_int = int(num_str)
+        num_str = str(num_int)  # Remove leading zeroes
+        if num_int > 999999:  # This is for street names, we don't need more than that
+            return num_str
     except:
-        return str(num)
+        return num_str
     unidades = (
         "ZERO",
         "UM",
@@ -153,51 +154,48 @@ def number_to_portuguese(num):
         "OITOCENTOS",
         "NOVECENTOS",
     )
-    n = str(num)
-    if len(n) > 3:
-        n_milhares = n[:-3]
-        n_unidades = n[-3:]
-        if int(n) % 1000 == 0:
+    digito_milhares = num_str[:-3]
+    digito_unidades = num_str[-3:]
+    if len(num_str) > 3:
+        if num_int % 1000 == 0:
             return (
-                (number_to_portuguese(n_milhares) + " MIL")
-                .replace("UM MIL", "MIL")
-                .strip()
+                (num_para_pt(digito_milhares) + " MIL").replace("UM MIL", "MIL").strip()
             )
-        if int(n_unidades) % 100 == 0:
-            pre = "E "
+        if int(digito_unidades) < 101:
+            sufixo_milhares = "E "
         else:
-            pre = ""
+            sufixo_milhares = ""
         return (
             (
-                number_to_portuguese(n_milhares)
+                num_para_pt(digito_milhares)
                 + " MIL "
-                + pre
-                + number_to_portuguese(n_unidades)
+                + sufixo_milhares
+                + num_para_pt(digito_unidades)
             )
             .replace("UM MIL", "MIL")
             .replace("  ", " ")
             .strip()
         )
     else:
-        texto = ""
-        if len(n) > 2:
-            if int(n[-3:]) % 100 == 0:
-                if n[-3:] == "100":
-                    return (texto + "CEM").strip()
-                return (texto + centenas[int(n[0])]).strip()
-            if n[-2] == "0":
+        resultado = ""
+        if len(num_str) > 2:
+            if int(digito_unidades) % 100 == 0:
+                if digito_unidades == "100":
+                    return (resultado + "CEM").strip()
+                return (resultado + centenas[int(num_str[0])]).strip()
+            if num_str[-2] == "0":
                 sufixo_centena = ""
             else:
                 sufixo_centena = " E "
-            texto = texto + centenas[int(n[0])] + sufixo_centena
-        if len(n) > 1:
-            if n[-2:] in dezenas_irregulares.keys():
-                return (texto + dezenas_irregulares[n[-2:]]).strip()
-            elif int(n[-2:]) % 10 == 0:
-                return (texto + dezenas[int(n[-2])]).strip()
-            texto = texto + dezenas[int(n[-2])] + " E "
-        texto = texto + unidades[int(n[-1])]
-        return texto.strip()
+            resultado = resultado + centenas[int(num_str[0])] + sufixo_centena
+        if len(num_str) > 1:
+            if num_str[-2:] in dezenas_irregulares.keys():
+                return (resultado + dezenas_irregulares[num_str[-2:]]).strip()
+            elif int(num_str[-2:]) % 10 == 0:
+                return (resultado + dezenas[int(num_str[-2])]).strip()
+            resultado = resultado + dezenas[int(num_str[-2])] + " E "
+        resultado = resultado + unidades[int(num_str[-1])]
+        return resultado.strip()
 
 
 def standardize_street_names(t):
@@ -214,5 +212,5 @@ def standardize_street_names(t):
     t = delete_street_type(t)
     t = expand_abreviations(t)
     chunks = t.split()
-    chunks = [number_to_portuguese(p) if p.isdigit() else p for p in chunks]
+    chunks = [num_para_pt(p) if p.isdigit() else p for p in chunks]
     return " ".join(chunks)
