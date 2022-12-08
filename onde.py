@@ -104,12 +104,18 @@ def datafile_alert() -> None:
 
 
 def search_single_address():
-    clear_screen()
-    cli.print_title("PESQUISA INDIVIDUAL DE ENDEREÇOS")
-    logradouro = cli.text_question("Logradouro")
-    numero = cli.text_question("Número")
-    print(geocode(END, logradouro, numero))
-    input("...")
+    while True:
+        clear_screen()
+        cli.print_title("PESQUISA INDIVIDUAL DE ENDEREÇOS")
+        print("Informe os dados do endereço a ser pesquisado:\n")
+        street_name = cli.text_question("Logradouro")
+        address_number = cli.text_question("Número")
+        print(street_name, address_number)
+        # print(geocode(END, logradouro, numero))
+        print("\nContinuar?\n")
+        repeat = cli.options("Pesquisar mais um endereço", "Retornar ao menu inicial")
+        if repeat == "Retornar ao menu inicial":
+            break
 
 
 def geocode_file():
