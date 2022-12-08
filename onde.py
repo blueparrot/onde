@@ -44,6 +44,7 @@ if os.path.isfile(DATA):
     sp = cli.spinner("Carregando base de endereços")
     sp.start()
     END = pd.read_csv(DATA, sep=";", dtype=datatypes_dict())
+    unique_streets = END["NOMELOGR"].unique()
     sp.stop()
 
 

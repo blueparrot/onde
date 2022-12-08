@@ -6,7 +6,20 @@ LIMITE_NUMERO = 50  # Diferença máxima de numeração no imóvel a ser interpo
 LIMITE_FUZZY = 90  # Diferença máxima no match pelo fuzzywuzzy
 
 
-def geocode(df, logradouro, num, area=None, modo="nome"):
+def geocode():
+    def select_street_by_code():
+        pass
+
+    def select_street_by_cep():
+        pass
+
+    def select_street_by_name():
+        pass
+
+    pass
+
+
+def geocode_old(df, logradouro, num, area=None, modo="nome"):
     """
     Localiza as coordenadas geográficas de um dado endereço
 
