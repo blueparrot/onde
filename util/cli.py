@@ -18,6 +18,7 @@ class CustomTheme(Default):
 
     def __init__(self):
         super().__init__()
+        self.Question.mark_color = term.green
         self.Question.brackets_color = term.green
         self.Checkbox.selection_color = term.black_on_green
         self.Checkbox.selection_icon = ">"
