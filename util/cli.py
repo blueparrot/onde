@@ -4,22 +4,26 @@ from typing import Union
 
 import colorama as color
 import inquirer
-from inquirer.themes import GreenPassion
+from inquirer.themes import Default
 from blessed import Terminal
 from halo import Halo
 
 term = Terminal()
 
 
-class CustomTheme(GreenPassion):
+class CustomTheme(Default):
     """
     Custom inquirer theme compatible with Windows Command Prompt
     """
 
     def __init__(self):
         super().__init__()
+        self.Question.brackets_color = term.green
         self.Checkbox.selection_color = term.black_on_green
         self.Checkbox.selection_icon = ">"
+        self.Checkbox.selected_icon = "◉"
+        self.Checkbox.selected_color = term.green
+        self.Checkbox.unselected_icon = "◯"
         self.List.selection_color = term.black_on_green
         self.List.selection_cursor = ">"
 
