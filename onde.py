@@ -56,7 +56,7 @@ def action_menu() -> str:
         f"Onde@BH v{VERSION} - Geocodificador de endereços em Belo Horizonte",
         color_back=color.Back.GREEN,
     )
-    print("Selecione a ação:\n")
+    print("Navegue com as setas do teclado e pressione <ENTER> para executar a ação:\n")
     return cli.options(
         "Geocodificar arquivo CSV ou DBF",
         "Consultar endereço individual",
@@ -84,13 +84,6 @@ Prosseguir?\n"""
         )
     )
     return cli.options("SIM", "NÃO")
-
-
-def datafile_exists() -> bool:
-    if os.path.isfile(os.path.join(ABSOLUTE_PATH, "geodata", "base_enderecos.csv")):
-        return True
-    else:
-        return False
 
 
 def datafile_alert() -> None:
@@ -137,12 +130,12 @@ def start() -> None:
     while True:
         action_choice = action_menu()
         if action_choice == "Geocodificar arquivo CSV ou DBF":
-            if datafile_exists():
+            if os.path.isfile(DATA):
                 geocode_file()
             else:
                 datafile_alert()
         if action_choice == "Consultar endereço individual":
-            if datafile_exists():
+            if os.path.isfile(DATA):
                 geocode_single_address()
             else:
                 datafile_alert()
