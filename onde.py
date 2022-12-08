@@ -9,6 +9,7 @@ from util.update_geodata import update_all
 VERSION = "1.0"
 DISCLAIMER = (
     color.Fore.YELLOW
+    + color.Style.BRIGHT
     + """O script Onde@BH não tem fins comerciais e pode ser livremente utilizado,
 alterado e distribuído. Ele é disponibilizado com a expectativa de que seja
 útil, mas sem NENHUMA GARANTIA.
