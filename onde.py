@@ -7,7 +7,7 @@ from util.config import datatypes_dict
 from util.update_geodata import update_all
 from geocode import geocode
 
-VERSION = "1.0"
+VERSION = "0.1"
 DISCLAIMER = (
     color.Fore.YELLOW
     + color.Style.BRIGHT
@@ -52,7 +52,7 @@ def clear_screen():
     os.system("cls" if os.name == "nt" else "clear")
 
 
-def action_menu() -> str:
+def main_menu() -> str:
     clear_screen()
     cli.print_title(
         f"Onde@BH v{VERSION} - Geocodificador de endereços em Belo Horizonte",
@@ -103,7 +103,7 @@ def datafile_alert() -> None:
     input("Pressione <ENTER> para continuar...")
 
 
-def search_single_address():
+def search_single_address() -> None:
     while True:
         clear_screen()
         cli.print_title("PESQUISA INDIVIDUAL DE ENDEREÇOS")
@@ -139,7 +139,7 @@ def start() -> None:
             os.makedirs(folder)
 
     while True:
-        action_choice = action_menu()
+        action_choice = main_menu()
         if action_choice == "Geocodificar arquivo CSV ou DBF":
             if os.path.isfile(DATA):
                 geocode_file()

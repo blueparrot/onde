@@ -1,3 +1,5 @@
+import pandas as pd
+
 from fuzzywuzzy import process
 from util.street_names import standardize_street_names
 
@@ -6,16 +8,17 @@ LIMITE_NUMERO = 50  # Diferença máxima de numeração no imóvel a ser interpo
 LIMITE_FUZZY = 90  # Diferença máxima no match pelo fuzzywuzzy
 
 
-def geocode():
-    def select_street_by_code():
+def geocode(df: pd.DataFrame, street: str, address_number: str, search_mode: str):
+    def select_street_by_code(street_code: str) -> pd.DataFrame:
         pass
 
-    def select_street_by_cep():
+    def select_street_by_cep(street_cep: str) -> pd.DataFrame:
         pass
 
-    def select_street_by_name():
+    def select_street_by_name(street_name: str) -> pd.DataFrame:
         pass
 
+    # Remember to strip characters from address numbers
     pass
 
 
