@@ -1,12 +1,12 @@
 import pandas as pd
 from enum import Enum, auto
 
-from fuzzywuzzy import process
+from thefuzz import fuzz, process
 from util.street_names import standardize_street_names
 
 # IMPLEMENTAR CACHE DE LOGRADOUROS DO FUZZY
 LIMITE_NUMERO = 50  # Diferença máxima de numeração no imóvel a ser interpolado
-LIMITE_FUZZY = 90  # Diferença máxima no match pelo fuzzywuzzy
+FUZZ_CUTOFF = 90  # Diferença máxima no match pelo fuzzywuzzy
 
 
 class SearchMode(Enum):
@@ -17,6 +17,7 @@ class SearchMode(Enum):
 
 def geocode(
     address_data: pd.DataFrame,
+    street_list: list[str],
     street: str,
     address_number: str,
     search_mode: SearchMode,
@@ -24,21 +25,36 @@ def geocode(
     def select_street_by_code(
         street_code: str, df: pd.DataFrame = address_data
     ) -> pd.DataFrame:
-        street_code = int(street_code)
-        return df[df["COD_LOGR"] == street_code]
+        return df[df["COD_LOGR"] == int(street_code)]
 
     def select_street_by_cep(
         street_cep: str, df: pd.DataFrame = address_data
     ) -> pd.DataFrame:
-        pass
+        return df[df["CEP"] == int(street_cep)]
 
     def select_street_by_name(
         street_name: str, df: pd.DataFrame = address_data
     ) -> pd.DataFrame:
-        pass
+        street_match = process.extractOne(
+            standardize_street_names(street_name),
+            street_list,
+            scorer=fuzz.token_sort_ratio,
+            score_cutoff=FUZZ_CUTOFF,
+        )
+        if street_match is None:
+            return pd.DataFrame(columns=df.columns)
+        return df[df["NOMELOGR"] == street_match[0]]
+
+    if search_mode == SearchMode.BY_CODE:
+        street_selection = select_street_by_code(street, address_data)
+    if search_mode == SearchMode.BY_CEP:
+        street_selection = select_street_by_cep(street, address_data)
+    if search_mode == SearchMode.BY_NAME:
+        street_selection = select_street_by_name(street, address_data)
 
     # Remember to strip characters from address numbers
-    return select_street_by_code(street)
+
+    return street_selection
 
 
 def geocode_old(df, logradouro, num, area=None, modo="nome"):
@@ -145,7 +161,7 @@ def geocode_old(df, logradouro, num, area=None, modo="nome"):
         # Quando a busca é pelo nome do logradouro, tenta fazer aproximação
         lista_logradouros = area_selecionada["NOMELOGR"].tolist()
         logradouro_aproximado = process.extractOne(
-            logradouro, choices=lista_logradouros, score_cutoff=LIMITE_FUZZY
+            logradouro, choices=lista_logradouros, score_cutoff=FUZZ_CUTOFF
         )
         if logradouro_aproximado == None:
             return {"X": "", "Y": "", "GEOLOG": "LOGRADOURO NAO ENCONTRADO"}
