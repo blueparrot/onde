@@ -1,4 +1,5 @@
 import pandas as pd
+from enum import Enum, auto
 
 from fuzzywuzzy import process
 from util.street_names import standardize_street_names
@@ -8,18 +9,36 @@ LIMITE_NUMERO = 50  # Diferença máxima de numeração no imóvel a ser interpo
 LIMITE_FUZZY = 90  # Diferença máxima no match pelo fuzzywuzzy
 
 
-def geocode(df: pd.DataFrame, street: str, address_number: str, search_mode: str):
-    def select_street_by_code(street_code: str) -> pd.DataFrame:
+class SearchMode(Enum):
+    BY_CODE = auto()
+    BY_CEP = auto()
+    BY_NAME = auto()
+
+
+def geocode(
+    address_data: pd.DataFrame,
+    street: str,
+    address_number: str,
+    search_mode: SearchMode,
+):
+    def select_street_by_code(
+        street_code: str, df: pd.DataFrame = address_data
+    ) -> pd.DataFrame:
+        street_code = int(street_code)
+        return df[df["COD_LOGR"] == street_code]
+
+    def select_street_by_cep(
+        street_cep: str, df: pd.DataFrame = address_data
+    ) -> pd.DataFrame:
         pass
 
-    def select_street_by_cep(street_cep: str) -> pd.DataFrame:
-        pass
-
-    def select_street_by_name(street_name: str) -> pd.DataFrame:
+    def select_street_by_name(
+        street_name: str, df: pd.DataFrame = address_data
+    ) -> pd.DataFrame:
         pass
 
     # Remember to strip characters from address numbers
-    pass
+    return select_street_by_code(street)
 
 
 def geocode_old(df, logradouro, num, area=None, modo="nome"):

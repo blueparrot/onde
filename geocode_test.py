@@ -1,7 +1,7 @@
 import os
 import pandas as pd
 
-from geocode import geocode
+from geocode import geocode, SearchMode
 import util.cli as cli
 from util.config import datatypes_dict
 
@@ -15,5 +15,5 @@ if os.path.isfile(ADDRESS_DATA):
     unique_streets = list(END["NOMELOGR"].sort_values().unique())
     sp.stop()
 
-response = geocode(END, "SILVA LOBO", "1280")
-print(response)
+response = geocode(END, "95", "", SearchMode.BY_CODE)
+print(response.head())
