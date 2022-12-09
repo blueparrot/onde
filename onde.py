@@ -5,7 +5,7 @@ import colorama as color
 import util.cli as cli
 from util.config import datatypes_dict
 from util.update_geodata import update_all
-from geocode import geocode
+from geocode import geocode, SearchMode
 
 VERSION = "0.1"
 DISCLAIMER = (
@@ -110,8 +110,11 @@ def search_single_address() -> None:
         print("Informe os dados do endereço a ser pesquisado:\n")
         street_name = cli.text_question("Logradouro")
         address_number = cli.text_question("Número")
-        print(street_name, address_number)
-        # print(geocode(END, logradouro, numero))
+        print(
+            geocode(
+                END, unique_streets, street_name, address_number, SearchMode.BY_NAME
+            ).iloc[0, :]
+        )
         print("\nContinuar?\n")
         repeat = cli.options("Pesquisar mais um endereço", "Retornar ao menu inicial")
         if repeat == "Retornar ao menu inicial":

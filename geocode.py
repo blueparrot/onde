@@ -4,9 +4,9 @@ from enum import Enum, auto
 from thefuzz import fuzz, process
 from util.street_names import standardize_street_names
 
-# IMPLEMENTAR CACHE DE LOGRADOUROS DO FUZZY
 LIMITE_NUMERO = 50  # Diferença máxima de numeração no imóvel a ser interpolado
 FUZZ_CUTOFF = 90  # Diferença máxima no match pelo fuzzywuzzy
+fuzz_cache = {}
 
 
 class SearchMode(Enum):
@@ -35,15 +35,20 @@ def geocode(
     def select_street_by_name(
         street_name: str, df: pd.DataFrame = address_data
     ) -> pd.DataFrame:
-        street_match = process.extractOne(
-            standardize_street_names(street_name),
-            street_list,
-            scorer=fuzz.token_sort_ratio,
-            score_cutoff=FUZZ_CUTOFF,
-        )
-        if street_match is None:
-            return pd.DataFrame(columns=df.columns)
-        return df[df["NOMELOGR"] == street_match[0]]
+        if street_name in fuzz_cache:
+            street_match = fuzz_cache[street_name]
+        else:
+            street_match = process.extractOne(
+                standardize_street_names(street_name),
+                street_list,
+                scorer=fuzz.token_sort_ratio,
+                score_cutoff=FUZZ_CUTOFF,
+            )
+            if street_match is None:
+                return pd.DataFrame(columns=df.columns)
+            street_match = street_match[0]
+        fuzz_cache[street_name] = street_match
+        return df[df["NOMELOGR"] == street_match]
 
     if search_mode == SearchMode.BY_CODE:
         street_selection = select_street_by_code(street, address_data)
