@@ -32,21 +32,15 @@ def geocode(
     log_street = "Não localizado"
     log_address = "Não localizado"
 
-    def select_street_by_code(
-        street_code: str, df: pd.DataFrame = address_data
-    ) -> pd.DataFrame:
+    def select_street_by_code(street_code: str) -> pd.DataFrame:
         log_street = "Loc. pelo código"
-        return df[df["COD_LOGR"] == int(street_code)]
+        return address_data[address_data["COD_LOGR"] == int(street_code)]
 
-    def select_street_by_cep(
-        street_cep: str, df: pd.DataFrame = address_data
-    ) -> pd.DataFrame:
+    def select_street_by_cep(street_cep: str) -> pd.DataFrame:
         log_street = "Loc. pelo CEP"
-        return df[df["CEP"] == int(street_cep)]
+        return address_data[address_data["CEP"] == int(street_cep)]
 
-    def select_street_by_name(
-        street_name: str, df: pd.DataFrame = address_data
-    ) -> pd.DataFrame:
+    def select_street_by_name(street_name: str) -> pd.DataFrame:
         if street_name in fuzz_cache:
             street_match = fuzz_cache[street_name]
         else:
@@ -57,11 +51,11 @@ def geocode(
                 score_cutoff=FUZZ_CUTOFF,
             )
             if street_match is None:
-                return pd.DataFrame(columns=df.columns)
+                return pd.DataFrame(columns=address_data.columns)
             street_match = street_match[0]
         fuzz_cache[street_name] = street_match
         log_street = "Loc. pelo nome"
-        return df[df["NOMELOGR"] == street_match]
+        return address_data[address_data["NOMELOGR"] == street_match]
 
     def get_closest_neighbours(
         address_number: int, street_selection: pd.DataFrame
@@ -80,15 +74,15 @@ def geocode(
         pass
 
     if search_mode == SearchMode.BY_CODE:
-        street_selection = select_street_by_code(street, address_data)
+        street_selection = select_street_by_code(street)
         if len(street_selection) > 0:
             log_street = "Loc. pelo código"
     if search_mode == SearchMode.BY_CEP:
-        street_selection = select_street_by_cep(street, address_data)
+        street_selection = select_street_by_cep(street)
         if len(street_selection) > 0:
             log_street = "Loc. pelo CEP"
     if search_mode == SearchMode.BY_NAME:
-        street_selection = select_street_by_name(street, address_data)
+        street_selection = select_street_by_name(street)
         if len(street_selection) > 0:
             log_street = "Loc. pelo nome"
 
