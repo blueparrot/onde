@@ -179,6 +179,8 @@ def update_all() -> None:
     sp = cli.spinner("Convertendo dados")
     sp.start()
     for col, datatype in zip(util.config.new_col_names(), util.config.datatypes_list()):
+        if col == "X" or col == "Y":
+            continue
         if datatype != "str":
             end[col] = end[col].astype(datatype)
     sp.stop_and_persist(symbol=SPINNER_STOP_SYMBOL)

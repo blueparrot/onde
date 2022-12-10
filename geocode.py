@@ -21,7 +21,7 @@ empty_result = {
     "Y": [""],
     "LOG_LGRD": ["Não localizado"],
     "LOG_NUMR": ["Não localizado"],
-}  # must be a df? would make sintax worse
+}
 
 
 class SearchMode(Enum):
@@ -73,6 +73,8 @@ def linear_regression(address_number: int, neighbours: pd.DataFrame) -> dict[str
     delta_adress = address_bigger["NUM_IMOV"] - address_smaller["NUM_IMOV"]
     if delta_adress == 0:
         return {"X": "", "Y": ""}
+    delta_x = address_bigger["X"] - address_smaller["X"]
+    delta_y = address_bigger["Y"] - address_smaller["Y"]
     print(address_smaller, address_bigger)
     coordinates = {"X": "", "Y": ""}
     return coordinates
