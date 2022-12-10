@@ -1,6 +1,5 @@
 from enum import Enum, auto
 
-import numpy as np
 import pandas as pd
 from thefuzz import fuzz, process
 
@@ -37,35 +36,6 @@ def clean_number(text: str) -> int:
     if len(clean_text) == 0:
         return 0
     return int("".join(clean_text))
-
-
-# # Identifica os pontos de referência com maior e menor numeração
-# p_max = pontos[pontos.NUM_IMOV == pontos.NUM_IMOV.max()]
-# p_min = pontos[pontos.NUM_IMOV == pontos.NUM_IMOV.min()]
-# # Calcula a diferença de numeração ente os pontos de referência
-# delta_n = p_max.iloc[0]["NUM_IMOV"] - p_min.iloc[0]["NUM_IMOV"]
-# # Se p_max é igual a p_min, retorna em branco
-# if delta_n == 0:
-#     return {"X": "", "Y": ""}
-# # Converte as coordenadas para float e calcula as inclinações em que X e Y variam  de acordo com a variação
-# # dos números dos imóveis. Em outras palavras, considera-se que a numeração dos imóveis seria o eixo horizontal
-# # e as coordenadas de longitude ou latitude UTM seriam os eixos verticais em uma linha
-# delta_x = float(p_max.iloc[0]["X"].replace(",", ".")) - float(
-#     p_min.iloc[0]["X"].replace(",", ".")
-# )
-# delta_y = float(p_max.iloc[0]["Y"].replace(",", ".")) - float(
-#     p_min.iloc[0]["Y"].replace(",", ".")
-# )
-# inc_x = delta_x / delta_n
-# inc_y = delta_y / delta_n
-# # Determina as coordenadas do imóvel procurado a partir do ponto de referência com menor numeração
-# dist_n = num - p_min.iloc[0]["NUM_IMOV"]
-# x = float(p_min.iloc[0]["X"].replace(",", ".")) + (dist_n * inc_x)
-# y = float(p_min.iloc[0]["Y"].replace(",", ".")) + (dist_n * inc_y)
-# # Converte as coordenadas novamente para formato string
-# x_str = "{:.3f}".format(x).replace(".", ",")
-# y_str = "{:.3f}".format(y).replace(".", ",")
-# return {"X": x_str, "Y": y_str}
 
 
 def geocode(
