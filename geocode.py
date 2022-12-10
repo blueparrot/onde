@@ -6,7 +6,7 @@ from thefuzz import fuzz, process
 from util.street_names import standardize_street_names
 
 MAX_ADDRESS_DELTA = 50  # Diferença máxima de numeração no imóvel a ser interpolado
-FUZZ_CUTOFF = 90  # Diferença máxima no match pelo fuzzywuzzy
+FUZZ_CUTOFF = 90  # Diferença máxima no match pelo fuzzy
 fuzz_cache = {}
 empty_result = {
     "REGIONAL": [""],
@@ -135,13 +135,6 @@ def geocode(
                 result[col] = ["Indeterminado"]
 
         coordinates = linear_regression(address_number, closest_neighbours)
-        print(
-            ">>>>>>>>>>>>>>>>>",
-            coordinates["X"],
-            type(coordinates["X"]),
-            coordinates["Y"],
-            type(coordinates["Y"]),
-        )
         result["X"], result["Y"] = [coordinates["X"]], [coordinates["Y"]]
         result["LOG_NUMR"] = ["End. aproximado"]
         return result
@@ -171,3 +164,7 @@ def geocode(
         result = interpolate_position()
         result["LOG_LGRD"] = log_street
     return {key: str(value[0]) for key, value in result.items()}
+
+
+def geocode_file():
+    pass

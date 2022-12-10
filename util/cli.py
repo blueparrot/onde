@@ -47,6 +47,19 @@ def print_title(
     )
 
 
+def print_result(
+    legend: str,
+    result: str,
+    indent_spacing=5,
+    color_fore=color.Fore.BLUE,
+    color_style=color.Style.BRIGHT,
+) -> None:
+    """
+    Prints indented colored text
+    """
+    print(" " * indent_spacing + legend + ": " + color_fore + color_style + result)
+
+
 def file_selector(
     folder: Union[str, os.PathLike], *filetypes: str
 ) -> Union[str, os.PathLike]:

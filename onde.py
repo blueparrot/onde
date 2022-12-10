@@ -113,14 +113,39 @@ def search_single_address() -> None:
         result = geocode(
             END, unique_streets, street_name, address_number, SearchMode.BY_NAME
         )
-        print(result)
+        if (
+            result["LOG_LGRD"] == "Não localizado"
+            or result["LOG_NUMR"] == "Não localizado"
+        ):
+            print(color.Fore.RED + "Endereço não localizado")
+        else:
+            cli.print_result(
+                "Endereço procurado",
+                result["TIPOLOGR"]
+                + " "
+                + result["NOMELOGR"]
+                + ", "
+                + result["NUM_IMOV"]
+                + " - CEP "
+                + result["CEP"],
+            )
+            cli.print_result("Código de logradouro", result["COD_LOGR"])
+            cli.print_result("Bairro", result["BAIRRO"].upper())
+            cli.print_result("Regional", result["REGIONAL"])
+            cli.print_result("Área de abrangência", result["AA"])
+            cli.print_result("Quarteirão", result["QT"])
+            cli.print_result(
+                "Coordenadas (EPSG: 31983 - SIRGAS 2000 23S)",
+                "X: " + result["X"] + " — Y: " + result["Y"],
+            )
+            cli.print_result("Registro de localização do imóvel", result["LOG_NUMR"])
         print(color.Fore.GREEN + "\nContinuar?\n")
         repeat = cli.options("Pesquisar mais um endereço", "Retornar ao menu inicial")
         if repeat == "Retornar ao menu inicial":
             break
 
 
-def geocode_file():
+def process_file():
     clear_screen()
     cli.print_title("GEOCODIFICAR ARQUIVOS")
     input("...")
@@ -144,7 +169,7 @@ def main() -> None:
         action_choice = main_menu()
         if action_choice == "Geocodificar arquivo CSV ou DBF":
             if os.path.isfile(DATA):
-                geocode_file()
+                process_file()
             else:
                 datafile_alert()
         if action_choice == "Pesquisar endereço individual":
