@@ -131,8 +131,8 @@ def search_single_address() -> None:
             )
             cli.print_result("Código de logradouro", result["COD_LOGR"])
             cli.print_result("Bairro", result["BAIRRO"].upper())
-            cli.print_result("Regional", result["REGIONAL"])
-            cli.print_result("Área de abrangência", result["AA"])
+            cli.print_result("Distrito Sanitário", result["REGIONAL"])
+            cli.print_result("Área de abrangência da SMSA", result["AA"])
             cli.print_result("Quarteirão", result["QT"])
             cli.print_result(
                 "Coordenadas (EPSG: 31983 - SIRGAS 2000 23S)",
