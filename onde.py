@@ -110,12 +110,11 @@ def search_single_address() -> None:
         print("Informe os dados do endereço a ser pesquisado:\n")
         street_name = cli.text_question("Logradouro")
         address_number = cli.text_question("Número")
-        print(
-            geocode(
-                END, unique_streets, street_name, address_number, SearchMode.BY_NAME
-            ).iloc[0, :]
+        result = geocode(
+            END, unique_streets, street_name, address_number, SearchMode.BY_NAME
         )
-        print("\nContinuar?\n")
+        print(result)
+        print(color.Fore.GREEN + "\nContinuar?\n")
         repeat = cli.options("Pesquisar mais um endereço", "Retornar ao menu inicial")
         if repeat == "Retornar ao menu inicial":
             break

@@ -17,5 +17,9 @@ if os.path.isfile(ADDRESS_DATA):
 
 # response = geocode(END, unique_streets, "95", "", SearchMode.BY_CODE)
 # response = geocode(END, unique_streets, "30575060", "", SearchMode.BY_CEP)
-response = geocode(END, unique_streets, "mario wernecky", "", SearchMode.BY_NAME)
-print(response.head())
+# response = geocode(END, unique_streets, "iracy manata", "143", SearchMode.BY_NAME)
+# print(response)
+
+# df = END[END.REGIONAL == "OESTE"]
+
+# print(df.loc[df["NUM_IMOV"].mod(2).eq(1), :])
