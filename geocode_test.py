@@ -17,8 +17,8 @@ if os.path.isfile(ADDRESS_DATA):
 
 # response = geocode(END, unique_streets, "95", "", SearchMode.BY_CODE)
 # response = geocode(END, unique_streets, "30575060", "", SearchMode.BY_CEP)
-# response = geocode(END, unique_streets, "iracy manata", "143", SearchMode.BY_NAME)
-# print(response)
+response = geocode(END, unique_streets, "iracy manata", "143", SearchMode.BY_NAME)
+print(response)
 
 # df = END[END.REGIONAL == "OESTE"]
 

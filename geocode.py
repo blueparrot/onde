@@ -63,8 +63,16 @@ def geocode(
         log_street = "Loc. pelo nome"
         return df[df["NOMELOGR"] == street_match]
 
-    def get_closest_addresses():
-        pass
+    def get_closest_neighbours(
+        address_number: int, street_selection: pd.DataFrame
+    ) -> pd.DataFrame:
+        odd_even = 0 if address_number % 2 == 0 else 1
+        same_side_of_street = street_selection.loc[
+            street_selection["NUM_IMOV"].mod(2).eq(odd_even), :
+        ]
+        return same_side_of_street.iloc[
+            (same_side_of_street["NUM_IMOV"] - address_number).abs().argsort()[:2]
+        ]
 
     def interpolate_position():
         pass
@@ -82,9 +90,8 @@ def geocode(
         if len(street_selection) > 0:
             log_street = "Loc. pelo nome"
 
-    located_address = street_selection[
-        street_selection["NUM_IMOV"] == clean_number(address_number)
-    ]
+    address_number = clean_number(address_number)
+    located_address = street_selection[street_selection["NUM_IMOV"] == address_number]
     if len(located_address) > 0:
         log_address = "End. oficial"
         result = located_address.to_dict(orient="list")
@@ -92,11 +99,10 @@ def geocode(
         result["GEO_END"] = log_address
         return result
     else:
-        odd_even = 0 if clean_number(address_number) % 2 == 0 else 1
-        same_side = street_selection.loc[
-            street_selection["NUM_IMOV"].mod(2).eq(odd_even), :
-        ]
-        return same_side.iloc[0:5, :].to_dict(orient="list")
+        closest_neighbours = get_closest_neighbours(address_number, street_selection)
+        if len(closest_neighbours) < 2:
+            return "Poucos vizinhos"
+        return closest_neighbours.to_dict(orient="list")
 
 
 def geocode_old(df, logradouro, num, area=None, modo="nome"):
