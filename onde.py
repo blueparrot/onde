@@ -126,7 +126,7 @@ def geocode_file():
     input("...")
 
 
-def start() -> None:
+def main() -> None:
     clear_screen()
     os.system("mode con: cols=80 lines=30")
     color.init(autoreset=True)
@@ -172,4 +172,4 @@ def start() -> None:
 
 
 if __name__ == "__main__":
-    start()
+    main()

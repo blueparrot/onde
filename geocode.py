@@ -4,9 +4,24 @@ from enum import Enum, auto
 from thefuzz import fuzz, process
 from util.street_names import standardize_street_names
 
-LIMITE_NUMERO = 50  # Diferença máxima de numeração no imóvel a ser interpolado
+MAX_ADDRESS_DELTA = 50  # Diferença máxima de numeração no imóvel a ser interpolado
 FUZZ_CUTOFF = 90  # Diferença máxima no match pelo fuzzywuzzy
 fuzz_cache = {}
+empty_result = {
+    "REGIONAL": [],
+    "AA": [],
+    "QT": [],
+    "CEP": [],
+    "COD_LOGR": [],
+    "TIPOLOGR": [],
+    "NOMELOGR": [],
+    "NUM_IMOV": [],
+    "BAIRRO": [],
+    "X": [],
+    "Y": [],
+    "LOG_LGRD": [],
+    "LOG_NUMR": [],
+}
 
 
 class SearchMode(Enum):
@@ -30,7 +45,7 @@ def geocode(
     search_mode: SearchMode,
 ) -> dict[str, str]:
     log_street = "Não localizado"
-    log_address = "Não localizado"
+    # log_address = "Não localizado"
 
     def select_street_by_code(street_code: str) -> pd.DataFrame:
         log_street = "Loc. pelo código"
@@ -65,13 +80,35 @@ def geocode(
             street_selection["NUM_IMOV"].mod(2).eq(odd_even), :
         ]
         if len(same_side_of_street) < 2:
-            return pd.DataFrame(columns=address_data.columns)
+            return empty_result
         return same_side_of_street.iloc[
             (same_side_of_street["NUM_IMOV"] - address_number).abs().argsort().iloc[:2]
         ]
 
-    def interpolate_position():
-        pass
+    def interpolate_position() -> dict[str, list[str]]:
+        closest_neighbours = get_closest_neighbours(address_number, street_selection)
+        if len(closest_neighbours) < 2:
+            result = empty_result
+            result["LOG_NUMR"] = ["Não localizado"]
+            return result
+        result = empty_result
+        result["NUM_IMOV"] = [address_number]
+        for col in [
+            "REGIONAL",
+            "AA",
+            "QT",
+            "CEP",
+            "COD_LOGR",
+            "TIPOLOGR",
+            "NOMELOGR",
+            "BAIRRO",
+        ]:
+            if closest_neighbours.iloc[0, :][col] == closest_neighbours.iloc[1, :][col]:
+                result[col] = [closest_neighbours.iloc[0, :][col]]
+            else:
+                result[col] = ["Indeterminado"]
+        result["LOG_NUMR"] = ["End. aproximado"]
+        return result
 
     if search_mode == SearchMode.BY_CODE:
         street_selection = select_street_by_code(street)
@@ -89,36 +126,13 @@ def geocode(
     address_number = clean_number(address_number)
     located_address = street_selection[street_selection["NUM_IMOV"] == address_number]
     if len(located_address) > 0:
-        log_address = "End. oficial"
         result = located_address.to_dict(orient="list")
-        result["GEO_LOGR"] = [log_street]
-        result["GEO_END"] = [log_address]
-        return result
+        result["LOG_LGRD"] = [log_street]
+        result["LOG_NUMR"] = ["End. oficial"]
     else:
-        closest_neighbours = get_closest_neighbours(address_number, street_selection)
-        if len(closest_neighbours) < 2:
-            return pd.DataFrame(columns=address_data.columns)
-        result = pd.DataFrame(columns=address_data.columns)
-        s = pd.Series(["" for _ in address_data.columns], index=address_data.columns)
-        result = result.append(s, ignore_index=True)
-        for col in [
-            "REGIONAL",
-            "AA",
-            "QT",
-            "CEP",
-            "COD_LOGR",
-            "TIPOLOGR",
-            "NOMELOGR",
-            "BAIRRO",
-        ]:
-            if closest_neighbours.iloc[0, :][col] == closest_neighbours.iloc[1, :][col]:
-                result.iat[0, result.columns.get_loc(col)] = closest_neighbours.iloc[
-                    0, :
-                ][col]
-            else:
-                result.iat[0, result.columns.get_loc(col)] = "Indeterminado"
-
-        return result.to_dict(orient="list")
+        result = interpolate_position()
+        result["LOG_LGRD"] = [log_street]
+    return result
 
 
 def geocode_old(df, logradouro, num, area=None, modo="nome"):
@@ -266,8 +280,8 @@ def geocode_old(df, logradouro, num, area=None, modo="nome"):
                 "Y": "",
                 "GEOLOG": texto_log + "POUCOS PARAMETROS PARA INTERPOLACAO",
             }
-        elif (abs(proximos.iloc[0]["NUM_IMOV"] - num) > LIMITE_NUMERO) or (
-            abs(proximos.iloc[1]["NUM_IMOV"] - num) > LIMITE_NUMERO
+        elif (abs(proximos.iloc[0]["NUM_IMOV"] - num) > MAX_ADDRESS_DELTA) or (
+            abs(proximos.iloc[1]["NUM_IMOV"] - num) > MAX_ADDRESS_DELTA
         ):
             # Retorna coordenadas em branco se a numeração for muito distante dos mais próximos
             return {"X": "", "Y": "", "GEOLOG": texto_log + "NUMERO MUITO DISTANTE"}
