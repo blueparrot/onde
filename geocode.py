@@ -8,20 +8,20 @@ MAX_ADDRESS_DELTA = 50  # Diferença máxima de numeração no imóvel a ser int
 FUZZ_CUTOFF = 90  # Diferença máxima no match pelo fuzzywuzzy
 fuzz_cache = {}
 empty_result = {
-    "REGIONAL": [],
-    "AA": [],
-    "QT": [],
-    "CEP": [],
-    "COD_LOGR": [],
-    "TIPOLOGR": [],
-    "NOMELOGR": [],
-    "NUM_IMOV": [],
-    "BAIRRO": [],
-    "X": [],
-    "Y": [],
-    "LOG_LGRD": [],
-    "LOG_NUMR": [],
-}
+    "REGIONAL": [None],
+    "AA": [None],
+    "QT": [None],
+    "CEP": [None],
+    "COD_LOGR": [None],
+    "TIPOLOGR": [None],
+    "NOMELOGR": [None],
+    "NUM_IMOV": [None],
+    "BAIRRO": [None],
+    "X": [None],
+    "Y": [None],
+    "LOG_LGRD": ["Não localizado"],
+    "LOG_NUMR": ["Não localizado"],
+}  # must be a df? would make sintax worse
 
 
 class SearchMode(Enum):
@@ -44,8 +44,7 @@ def geocode(
     address_number: str,
     search_mode: SearchMode,
 ) -> dict[str, str]:
-    log_street = "Não localizado"
-    # log_address = "Não localizado"
+    result = empty_result
 
     def select_street_by_code(street_code: str) -> pd.DataFrame:
         log_street = "Loc. pelo código"
@@ -79,19 +78,14 @@ def geocode(
         same_side_of_street = street_selection.loc[
             street_selection["NUM_IMOV"].mod(2).eq(odd_even), :
         ]
-        if len(same_side_of_street) < 2:
-            return empty_result
         return same_side_of_street.iloc[
             (same_side_of_street["NUM_IMOV"] - address_number).abs().argsort().iloc[:2]
         ]
 
-    def interpolate_position() -> dict[str, list[str]]:
+    def interpolate_position() -> dict[str, str]:
         closest_neighbours = get_closest_neighbours(address_number, street_selection)
         if len(closest_neighbours) < 2:
-            result = empty_result
-            result["LOG_NUMR"] = ["Não localizado"]
             return result
-        result = empty_result
         result["NUM_IMOV"] = [address_number]
         for col in [
             "REGIONAL",
@@ -113,26 +107,24 @@ def geocode(
     if search_mode == SearchMode.BY_CODE:
         street_selection = select_street_by_code(street)
         if len(street_selection) > 0:
-            log_street = "Loc. pelo código"
+            result["LOG_LGRD"] = ["Loc. pelo código"]
     if search_mode == SearchMode.BY_CEP:
         street_selection = select_street_by_cep(street)
         if len(street_selection) > 0:
-            log_street = "Loc. pelo CEP"
+            result["LOG_LGRD"] = ["Loc. pelo CEP"]
     if search_mode == SearchMode.BY_NAME:
         street_selection = select_street_by_name(street)
         if len(street_selection) > 0:
-            log_street = "Loc. pelo nome"
+            result["LOG_LGRD"] = ["Loc. pelo nome"]
 
     address_number = clean_number(address_number)
     located_address = street_selection[street_selection["NUM_IMOV"] == address_number]
     if len(located_address) > 0:
         result = located_address.to_dict(orient="list")
-        result["LOG_LGRD"] = [log_street]
         result["LOG_NUMR"] = ["End. oficial"]
     else:
         result = interpolate_position()
-        result["LOG_LGRD"] = [log_street]
-    return result
+    return {key: str(value[0]) for key, value in result.items()}
 
 
 def geocode_old(df, logradouro, num, area=None, modo="nome"):
