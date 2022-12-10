@@ -13,7 +13,7 @@ term = Terminal()
 
 class CustomTheme(Default):
     """
-    Custom inquirer theme compatible with Windows Command Prompt
+    Custom inquirer theme compatible with Windows Command Prompt (few colors)
     """
 
     def __init__(self):
@@ -64,26 +64,19 @@ def file_selector(
     folder: Union[str, os.PathLike], *filetypes: str
 ) -> Union[str, os.PathLike]:
     """
-    Apresenta um menu de seleção de arquivos e retorna o caminho do arquivo escolhido
+    File selection menu
     """
-    file_choices = []
+    options = []
+    options.extend(["*** Atualizar lista de arquivos"])
     for ft in filetypes:
-        file_choices.extend(
+        options.extend(
             os.path.basename(f) for f in glob.glob(os.path.join(folder, f"*.{ft}"))
         )
-    if len(file_choices) == 0:
-        raise FileNotFoundError(
-            f"Não foram encontrados arquivos dos tipos: {filetypes}"
-        )
-    if len(file_choices) == 1:
-        return os.path.join(folder, file_choices[0])
+    options.extend(["<<< Retornar ao menu inicial"])
     q = [
-        inquirer.List(
-            "arquivo", message="Escolha o arquivo", choices=sorted(file_choices)
-        ),
+        inquirer.List("option", message="", choices=options, carousel=True),
     ]
-    resposta = inquirer.prompt(q, theme=CustomTheme())
-    return os.path.join(folder, resposta["arquivo"])
+    return inquirer.prompt(q, theme=CustomTheme())["option"]
 
 
 def options(*option_list: str) -> str:

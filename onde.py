@@ -138,7 +138,7 @@ def search_single_address() -> None:
                 "Coordenadas (EPSG: 31983 - SIRGAS 2000 23S)",
                 "X: " + result["X"] + " — Y: " + result["Y"],
             )
-            cli.print_result("Registro de localização do imóvel", result["LOG_NUMR"])
+            cli.print_result("Relatório de localização do imóvel", result["LOG_NUMR"])
         print(color.Fore.GREEN + "\nContinuar?\n")
         repeat = cli.options("Pesquisar mais um endereço", "Retornar ao menu inicial")
         if repeat == "Retornar ao menu inicial":
@@ -146,9 +146,25 @@ def search_single_address() -> None:
 
 
 def process_file():
-    clear_screen()
-    cli.print_title("GEOCODIFICAR ARQUIVOS")
-    input("...")
+    while True:
+        clear_screen()
+        cli.print_title("GEOCODIFICAR ARQUIVOS")
+        print(
+            "Para que os arquivos CSV ou DBF apareçam entre as opções abaixo, é necessário\n"
+            + "copiá-los para a pasta "
+            + color.Fore.GREEN
+            + os.path.join(ABSOLUTE_PATH, "entrada")
+            + color.Fore.RESET
+            + "\n"
+        )
+        selection = cli.file_selector(
+            os.path.join(ABSOLUTE_PATH, "entrada"), "CSV", "DBF"
+        )
+        print(selection)
+        if selection == "*** Atualizar lista de arquivos":
+            continue
+        if selection == "<<< Retornar ao menu inicial":
+            break
 
 
 def main() -> None:
