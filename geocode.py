@@ -8,17 +8,17 @@ MAX_ADDRESS_DELTA = 50  # Diferença máxima de numeração no imóvel a ser int
 FUZZ_CUTOFF = 90  # Diferença máxima no match pelo fuzzywuzzy
 fuzz_cache = {}
 empty_result = {
-    "REGIONAL": [None],
-    "AA": [None],
-    "QT": [None],
-    "CEP": [None],
-    "COD_LOGR": [None],
-    "TIPOLOGR": [None],
-    "NOMELOGR": [None],
-    "NUM_IMOV": [None],
-    "BAIRRO": [None],
-    "X": [None],
-    "Y": [None],
+    "REGIONAL": [""],
+    "AA": [""],
+    "QT": [""],
+    "CEP": [""],
+    "COD_LOGR": [""],
+    "TIPOLOGR": [""],
+    "NOMELOGR": [""],
+    "NUM_IMOV": [""],
+    "BAIRRO": [""],
+    "X": [""],
+    "Y": [""],
     "LOG_LGRD": ["Não localizado"],
     "LOG_NUMR": ["Não localizado"],
 }  # must be a df? would make sintax worse
@@ -35,6 +35,47 @@ def clean_number(text: str) -> int:
     if len(clean_text) == 0:
         return 0
     return int("".join(clean_text))
+
+
+# # Identifica os pontos de referência com maior e menor numeração
+# p_max = pontos[pontos.NUM_IMOV == pontos.NUM_IMOV.max()]
+# p_min = pontos[pontos.NUM_IMOV == pontos.NUM_IMOV.min()]
+# # Calcula a diferença de numeração ente os pontos de referência
+# delta_n = p_max.iloc[0]["NUM_IMOV"] - p_min.iloc[0]["NUM_IMOV"]
+# # Se p_max é igual a p_min, retorna em branco
+# if delta_n == 0:
+#     return {"X": "", "Y": ""}
+# # Converte as coordenadas para float e calcula as inclinações em que X e Y variam  de acordo com a variação
+# # dos números dos imóveis. Em outras palavras, considera-se que a numeração dos imóveis seria o eixo horizontal
+# # e as coordenadas de longitude ou latitude UTM seriam os eixos verticais em uma linha
+# delta_x = float(p_max.iloc[0]["X"].replace(",", ".")) - float(
+#     p_min.iloc[0]["X"].replace(",", ".")
+# )
+# delta_y = float(p_max.iloc[0]["Y"].replace(",", ".")) - float(
+#     p_min.iloc[0]["Y"].replace(",", ".")
+# )
+# inc_x = delta_x / delta_n
+# inc_y = delta_y / delta_n
+# # Determina as coordenadas do imóvel procurado a partir do ponto de referência com menor numeração
+# dist_n = num - p_min.iloc[0]["NUM_IMOV"]
+# x = float(p_min.iloc[0]["X"].replace(",", ".")) + (dist_n * inc_x)
+# y = float(p_min.iloc[0]["Y"].replace(",", ".")) + (dist_n * inc_y)
+# # Converte as coordenadas novamente para formato string
+# x_str = "{:.3f}".format(x).replace(".", ",")
+# y_str = "{:.3f}".format(y).replace(".", ",")
+# return {"X": x_str, "Y": y_str}
+
+
+def linear_regression(address_number: int, neighbours: pd.DataFrame) -> dict[str, str]:
+    # Assumes that the address data is sorted, which it is
+    address_smaller = neighbours.iloc[0, :]
+    address_bigger = neighbours.iloc[1, :]
+    delta_adress = address_bigger["NUM_IMOV"] - address_smaller["NUM_IMOV"]
+    if delta_adress == 0:
+        return {"X": "", "Y": ""}
+    print(address_smaller, address_bigger)
+    coordinates = {"X": "", "Y": ""}
+    return coordinates
 
 
 def geocode(
@@ -84,6 +125,10 @@ def geocode(
 
     def interpolate_position() -> dict[str, str]:
         closest_neighbours = get_closest_neighbours(address_number, street_selection)
+        if any(
+            abs(closest_neighbours["NUM_IMOV"] - address_number) > MAX_ADDRESS_DELTA
+        ):
+            return result
         if len(closest_neighbours) < 2:
             return result
         result["NUM_IMOV"] = [address_number]
@@ -101,29 +146,34 @@ def geocode(
                 result[col] = [closest_neighbours.iloc[0, :][col]]
             else:
                 result[col] = ["Indeterminado"]
+            linear_regression(address_number, closest_neighbours)
         result["LOG_NUMR"] = ["End. aproximado"]
         return result
 
     if search_mode == SearchMode.BY_CODE:
         street_selection = select_street_by_code(street)
         if len(street_selection) > 0:
-            result["LOG_LGRD"] = ["Loc. pelo código"]
+            log_street = ["Loc. pelo código"]
     if search_mode == SearchMode.BY_CEP:
         street_selection = select_street_by_cep(street)
         if len(street_selection) > 0:
-            result["LOG_LGRD"] = ["Loc. pelo CEP"]
+            log_street = ["Loc. pelo CEP"]
     if search_mode == SearchMode.BY_NAME:
         street_selection = select_street_by_name(street)
         if len(street_selection) > 0:
-            result["LOG_LGRD"] = ["Loc. pelo nome"]
+            log_street = ["Loc. pelo nome"]
+    if len(street_selection) == 0:
+        return {key: str(value[0]) for key, value in empty_result.items()}
 
     address_number = clean_number(address_number)
     located_address = street_selection[street_selection["NUM_IMOV"] == address_number]
     if len(located_address) > 0:
         result = located_address.to_dict(orient="list")
+        result["LOG_LGRD"] = log_street
         result["LOG_NUMR"] = ["End. oficial"]
     else:
         result = interpolate_position()
+        result["LOG_LGRD"] = log_street
     return {key: str(value[0]) for key, value in result.items()}
 
 
