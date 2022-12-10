@@ -58,5 +58,3 @@ END:
         datatype: category,
         ordem: 8,
       }
-    - { nome_original: X, renomear_para: X, datatype: int, ordem: 9 }
-    - { nome_original: Y, renomear_para: Y, datatype: int, ordem: 10 }
