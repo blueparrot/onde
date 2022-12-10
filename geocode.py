@@ -70,6 +70,8 @@ def geocode(
         same_side_of_street = street_selection.loc[
             street_selection["NUM_IMOV"].mod(2).eq(odd_even), :
         ]
+        if len(same_side_of_street) < 2:
+            return pd.DataFrame(columns=street_selection.columns)
         return same_side_of_street.iloc[
             (same_side_of_street["NUM_IMOV"] - address_number).abs().argsort()[:2]
         ]
@@ -95,8 +97,8 @@ def geocode(
     if len(located_address) > 0:
         log_address = "End. oficial"
         result = located_address.to_dict(orient="list")
-        result["GEO_LOGR"] = log_street
-        result["GEO_END"] = log_address
+        result["GEO_LOGR"] = [log_street]
+        result["GEO_END"] = [log_address]
         return result
     else:
         closest_neighbours = get_closest_neighbours(address_number, street_selection)
