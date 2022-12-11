@@ -102,7 +102,7 @@ def wfs_alert() -> str:
             + "Alerta: "
             + color.Fore.RESET
             + """Este processo pode ser demorado, mas só precisa ser feito se esta for
-uma instalação nova do script ou se houver mudanças significativas na base
+uma instalação nova do programa ou se houver mudanças significativas na base
 geográfica da cidade.
 
 Se a conexão com a internet ou o servidor de geosserviços estiverem instáveis,
@@ -173,6 +173,15 @@ def search_single_address() -> None:
 
 
 def process_file():
+    """
+    Colunas padrão do SINAN:
+    NM_BAIRRO : bairro
+    NM_LOGRADO : nome logradouroi
+    NU_NUMERO : numero imóvel
+    NM_REFEREN : código de logradouro
+    NU_CEP : CEP
+
+    """
     while True:
         clear_screen()
         cli.print_title("GEOCODIFICAR ARQUIVOS")
