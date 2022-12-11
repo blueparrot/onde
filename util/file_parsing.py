@@ -1,6 +1,8 @@
 import os
 import csv
+import yaml
 from typing import Union
+
 import pandas as pd
 
 ABSOLUTE_PATH = os.path.dirname(__file__)
@@ -17,6 +19,11 @@ def get_csv_columns(file: Union[str, os.PathLike]) -> list[str]:
     separator = get_csv_separator(file)
     df = pd.read_csv(file, sep=separator, encoding_errors="ignore", nrows=1)
     return df.columns.to_list()
+
+
+def contains_defaut_cols(file: Union[str, os.PathLike]) -> bool:
+    file_cols = get_csv_columns(file)
+    pass
 
 
 if __name__ == "__main__":
