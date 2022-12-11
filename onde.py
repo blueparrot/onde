@@ -174,6 +174,8 @@ def search_single_address() -> None:
             )
             cli.print_result("Relatório de localização do imóvel", result["LOG_NUMR"])
         print(color.Fore.GREEN + "\nContinuar?\n")
+        street_name = ""
+        address_number = ""
         repeat = cli.options("Pesquisar mais um endereço", "Retornar ao menu inicial")
         if repeat == "Retornar ao menu inicial":
             break
@@ -182,11 +184,15 @@ def search_single_address() -> None:
 def process_file():
     """
     Colunas padrão do SINAN:
-    NM_BAIRRO : bairro
+
+    Identificadores de logradouro:
     NM_LOGRADO : nome logradouroi
-    NU_NUMERO : numero imóvel
     NM_REFEREN : código de logradouro
     NU_CEP : CEP
+
+    Identificador de imóvel:
+    NU_NUMERO : numero imóvel
+
 
     """
     while True:

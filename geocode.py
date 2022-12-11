@@ -8,21 +8,6 @@ from util.street_names import standardize_street_names
 MAX_ADDRESS_DELTA = 50  # Diferença máxima de numeração no imóvel a ser interpolado
 FUZZ_CUTOFF = 90  # Diferença máxima no match pelo fuzzy
 fuzz_cache = {}
-empty_result = {
-    "REGIONAL": [""],
-    "AA": [""],
-    "QT": [""],
-    "CEP": [""],
-    "COD_LOGR": [""],
-    "TIPOLOGR": [""],
-    "NOMELOGR": [""],
-    "NUM_IMOV": [""],
-    "BAIRRO": [""],
-    "X": [""],
-    "Y": [""],
-    "LOG_LGRD": ["Não localizado"],
-    "LOG_NUMR": ["Não localizado"],
-}
 
 
 class SearchMode(Enum):
@@ -45,7 +30,22 @@ def geocode(
     address_number: str,
     search_mode: SearchMode,
 ) -> dict[str, str]:
-    result = empty_result
+    result = {
+        "REGIONAL": [""],
+        "AA": [""],
+        "QT": [""],
+        "CEP": [""],
+        "COD_LOGR": [""],
+        "TIPOLOGR": [""],
+        "NOMELOGR": [""],
+        "NUM_IMOV": [""],
+        "BAIRRO": [""],
+        "X": [""],
+        "Y": [""],
+        "LOG_LGRD": ["Não localizado"],
+        "LOG_NUMR": ["Não localizado"],
+    }
+    # result = empty_result
 
     def select_street_by_code(street_code: str) -> pd.DataFrame:
         log_street = "Loc. pelo código"
@@ -107,7 +107,6 @@ def geocode(
         return {"X": x_str, "Y": y_str}
 
     def interpolate_position() -> dict[str, str]:
-        result = empty_result
         closest_neighbours = get_closest_neighbours(address_number, street_selection)
 
         if any(
@@ -152,7 +151,7 @@ def geocode(
         if len(street_selection) > 0:
             log_street = ["Loc. pelo nome"]
     if len(street_selection) == 0:
-        return {key: str(value[0]) for key, value in empty_result.items()}
+        return {key: str(value[0]) for key, value in result.items()}
 
     address_number = clean_number(address_number)
     located_address = street_selection[street_selection["NUM_IMOV"] == address_number]
