@@ -38,18 +38,44 @@ no cargo de Técnico Superior de Saúde (BM 88183-3)
 Contato: joao.pfonseca@pbh.gov.br
 """
 )
+LOGO = """
+
+
+
+        ´:::::::.            .
+          ´:::::::.        .::
+            ´::::::::.   .::::
+              ´:::::::::::::::
+                ´:::::::::::::
+                  ´:::::::::::
+                 .::::::::::::
+               .::::::::::::::
+             .::::::::::::::::
+
+                        ____          __    _____  ___  __ __
+                       / __ \___  ___/ /__ / ___ \/ _ )/ // /
+                      / /_/ / _ \/ _  / -_) / _ `/ _  / _  / 
+                      \____/_//_/\_,_/\__/\ \_,_/____/_//_/  
+                                           \___/             
+"""
 ABSOLUTE_PATH = os.path.dirname(__file__)
 DATA = os.path.join(ABSOLUTE_PATH, "geodata", "base_enderecos.csv")
+
+
+def clear_screen():
+    os.system("cls" if os.name == "nt" else "clear")
+
+
+os.system("mode con: cols=80 lines=30")
+clear_screen()
+print(LOGO)
+
 if os.path.isfile(DATA):
     sp = cli.spinner("Carregando base de endereços")
     sp.start()
     END = pd.read_csv(DATA, sep=";", dtype=datatypes_dict())
     unique_streets = list(END["NOMELOGR"].sort_values().unique())
     sp.stop()
-
-
-def clear_screen():
-    os.system("cls" if os.name == "nt" else "clear")
 
 
 def main_menu() -> str:
@@ -169,7 +195,6 @@ def process_file():
 
 def main() -> None:
     clear_screen()
-    os.system("mode con: cols=80 lines=30")
     color.init(autoreset=True)
     DEFAULT_FOLDERS = [
         os.path.join(ABSOLUTE_PATH, "entrada"),
