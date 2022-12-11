@@ -65,7 +65,6 @@ LOGO = """
                                                                            (   )
                                                                             '-'
 """
-
 ABSOLUTE_PATH = os.path.dirname(__file__)
 DATA = os.path.join(ABSOLUTE_PATH, "geodata", "base_enderecos.csv")
 
