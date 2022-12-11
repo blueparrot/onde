@@ -20,13 +20,8 @@ class CustomTheme(Default):
         super().__init__()
         self.Question.mark_color = term.green
         self.Question.brackets_color = term.green
-        self.Checkbox.selection_color = term.black_on_green
-        self.Checkbox.selection_icon = ">"
-        self.Checkbox.selected_icon = "◉"
-        self.Checkbox.selected_color = term.green
-        self.Checkbox.unselected_icon = "◯"
         self.List.selection_color = term.black_on_green
-        self.List.selection_cursor = ">"
+        self.List.selection_cursor = " >"
 
 
 def print_title(
@@ -68,10 +63,13 @@ def file_selector(
     """
     options = []
     options.extend(["*** Atualizar lista de arquivos"])
+    file_options = []
     for ft in filetypes:
-        options.extend(
+        file_options.extend(
             os.path.basename(f) for f in glob.glob(os.path.join(folder, f"*.{ft}"))
         )
+    file_options = sorted(file_options)
+    options.extend(file_options)
     options.extend(["<<< Retornar ao menu inicial"])
     q = [
         inquirer.List("option", message="", choices=options, carousel=True),
@@ -80,7 +78,7 @@ def file_selector(
 
 
 def options(*option_list: str) -> str:
-    q = [inquirer.List("opt", choices=option_list)]
+    q = [inquirer.List("opt", choices=option_list, carousel=True)]
     return inquirer.prompt(q, theme=CustomTheme())["opt"]
 
 
