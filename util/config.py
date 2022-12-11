@@ -2,9 +2,10 @@ import os
 import yaml
 
 ABSOLUTE_PATH = os.path.dirname(__file__)
-YAML_FILE = os.path.join(ABSOLUTE_PATH, "geodata.yaml")
+GEODATA_CONFIG = os.path.join(ABSOLUTE_PATH, "geodata.yaml")
+INPUT_CONFIG = os.path.join(ABSOLUTE_PATH, "config_entrada.yaml")
 
-with open(YAML_FILE, "r") as stream:
+with open(GEODATA_CONFIG, "r") as stream:
     generator = yaml.safe_load_all(stream)
     server_configuration = generator.__next__()
     layer_configuration = generator.__next__()

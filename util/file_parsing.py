@@ -1,9 +1,10 @@
 import os
 import csv
-import yaml
 from typing import Union
 
 import pandas as pd
+
+import util.config
 
 ABSOLUTE_PATH = os.path.dirname(__file__)
 INPUT_FOLDER = os.path.join(ABSOLUTE_PATH, "..", "entrada")

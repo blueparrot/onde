@@ -101,6 +101,25 @@ def main_menu() -> str:
     )
 
 
+def csv_alert() -> None:
+    print("Tem que ser UTF-8")
+
+
+def datafile_alert() -> None:
+    print(
+        color.Fore.YELLOW
+        + "Alerta: "
+        + color.Fore.RESET
+        + "A base de endereços não foi detectada neste computador. \n"
+        + "É necessário executar a ação "
+        + color.Fore.GREEN
+        + "*Atualizar dados geográficos* "
+        + color.Fore.RESET
+        + "ao menos uma vez \npara preparar o ambiente deste programa. \n"
+    )
+    input("Pressione <ENTER> para continuar...")
+
+
 def wfs_alert() -> str:
     print(
         (
@@ -119,21 +138,6 @@ Prosseguir?\n"""
         )
     )
     return cli.options("SIM", "NÃO")
-
-
-def datafile_alert() -> None:
-    print(
-        color.Fore.YELLOW
-        + "Alerta: "
-        + color.Fore.RESET
-        + "A base de endereços não foi detectada neste computador. \n"
-        + "É necessário executar a ação "
-        + color.Fore.GREEN
-        + "*Atualizar dados geográficos* "
-        + color.Fore.RESET
-        + "ao menos uma vez \npara preparar o ambiente deste programa. \n"
-    )
-    input("Pressione <ENTER> para continuar...")
 
 
 def search_single_address() -> None:
