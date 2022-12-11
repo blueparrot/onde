@@ -5,8 +5,8 @@ from thefuzz import fuzz, process
 
 from util.street_names import standardize_street_names
 
-MAX_ADDRESS_DELTA = 50  # Diferença máxima de numeração no imóvel a ser interpolado
-FUZZ_CUTOFF = 90  # Diferença máxima no match pelo fuzzy
+MAX_ADDRESS_DELTA = 50
+FUZZ_CUTOFF = 90
 fuzz_cache = {}
 
 
@@ -45,14 +45,11 @@ def geocode(
         "LOG_LGRD": ["Não localizado"],
         "LOG_NUMR": ["Não localizado"],
     }
-    # result = empty_result
 
     def select_street_by_code(street_code: str) -> pd.DataFrame:
-        log_street = "Loc. pelo código"
         return address_data[address_data["COD_LOGR"] == int(street_code)]
 
     def select_street_by_cep(street_cep: str) -> pd.DataFrame:
-        log_street = "Loc. pelo CEP"
         return address_data[address_data["CEP"] == int(street_cep)]
 
     def select_street_by_name(street_name: str) -> pd.DataFrame:
@@ -69,7 +66,6 @@ def geocode(
                 return pd.DataFrame(columns=address_data.columns)
             street_match = street_match[0]
         fuzz_cache[street_name] = street_match
-        log_street = "Loc. pelo nome"
         return address_data[address_data["NOMELOGR"] == street_match]
 
     def get_closest_neighbours(
@@ -141,27 +137,26 @@ def geocode(
     if search_mode == SearchMode.BY_CODE:
         street_selection = select_street_by_code(street)
         if len(street_selection) > 0:
-            log_street = ["Loc. pelo código"]
+            result["LOG_LGRD"] = ["Loc. pelo código"]
     if search_mode == SearchMode.BY_CEP:
         street_selection = select_street_by_cep(street)
         if len(street_selection) > 0:
-            log_street = ["Loc. pelo CEP"]
+            result["LOG_LGRD"] = ["Loc. pelo CEP"]
     if search_mode == SearchMode.BY_NAME:
         street_selection = select_street_by_name(street)
         if len(street_selection) > 0:
-            log_street = ["Loc. pelo nome"]
+            result["LOG_LGRD"] = ["Loc. pelo nome"]
     if len(street_selection) == 0:
         return {key: str(value[0]) for key, value in result.items()}
 
     address_number = clean_number(address_number)
     located_address = street_selection[street_selection["NUM_IMOV"] == address_number]
     if len(located_address) > 0:
-        result = located_address.to_dict(orient="list")
-        result["LOG_LGRD"] = log_street
+        for key, value in located_address.to_dict(orient="list").items():
+            result[key] = value
         result["LOG_NUMR"] = ["End. oficial"]
     else:
         result = interpolate_position()
-        result["LOG_LGRD"] = log_street
     return {key: str(value[0]) for key, value in result.items()}
 
 
