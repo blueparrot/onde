@@ -41,9 +41,10 @@ Contato: joao.pfonseca@pbh.gov.br
 LOGO = """
 
 
-
-        ´:::::::.            .
-          ´:::::::.        .::
+             .
+           .:::.
+         .:::::::.           .
+          ´::::::::.       .::
             ´::::::::.   .::::
               ´:::::::::::::::
                 ´:::::::::::::
@@ -58,17 +59,13 @@ LOGO = """
                       \____/_//_/\_,_/\__/\ \_,_/____/_//_/  
                                            \___/             
 """
+
 ABSOLUTE_PATH = os.path.dirname(__file__)
 DATA = os.path.join(ABSOLUTE_PATH, "geodata", "base_enderecos.csv")
 
-
-def clear_screen():
-    os.system("cls" if os.name == "nt" else "clear")
-
-
 os.system("mode con: cols=80 lines=30")
-clear_screen()
-print(LOGO)
+os.system("cls" if os.name == "nt" else "clear")
+print(color.Fore.GREEN + color.Style.BRIGHT + LOGO + color.Style.RESET_ALL)
 
 if os.path.isfile(DATA):
     sp = cli.spinner("Carregando base de endereços")
@@ -76,6 +73,10 @@ if os.path.isfile(DATA):
     END = pd.read_csv(DATA, sep=";", dtype=datatypes_dict())
     unique_streets = list(END["NOMELOGR"].sort_values().unique())
     sp.stop()
+
+
+def clear_screen():
+    os.system("cls" if os.name == "nt" else "clear")
 
 
 def main_menu() -> str:
