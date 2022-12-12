@@ -3,6 +3,7 @@ import pandas as pd
 import colorama as color
 
 import util.cli as cli
+import util.file_parsing as fp
 from util.config import datatypes_dict
 from util.update_geodata import update_all
 from geocode import geocode, SearchMode
@@ -212,11 +213,16 @@ def process_file():
         selection = cli.file_selector(
             os.path.join(ABSOLUTE_PATH, "entrada"), "CSV", "DBF"
         )
-        print(selection)
         if selection == "*** Atualizar lista de arquivos":
             continue
         if selection == "<<< Retornar ao menu inicial":
             break
+        if selection[-3:].upper() == "CSV":
+            default_cols = fp.contains_default_cols(
+                os.path.join(ABSOLUTE_PATH, "entrada", selection)
+            )
+            print(f"Tem as colunas padrão: {default_cols}")
+            input(".")
 
 
 def main() -> None:

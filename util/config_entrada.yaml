@@ -1,5 +1,7 @@
 ---
-# As colunas a seguir
+# O script checa se estas colunas estão presentes no arquivo de entrada
+# Em caso afirmativo, oferece a opção de correspondência automática com
+# os parâmetros de pesquisa de endereço
 codigo_logradouro: NM_REFEREN
 cep: NU_CEP
 nome_logradouro: NM_LOGRADO

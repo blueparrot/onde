@@ -18,6 +18,9 @@ unpacked_layers = sorted(
     ]
 )
 
+with open(INPUT_CONFIG, "r") as stream:
+    input_configuration = yaml.safe_load(stream)
+
 
 def server():
     return server_configuration
@@ -41,3 +44,11 @@ def datatypes_list():
 
 def datatypes_dict():
     return {e[2]: e[3] for e in unpacked_layers}
+
+
+def input_dict():
+    return input_configuration
+
+
+def input_cols():
+    return list(input_configuration.values())

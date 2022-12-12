@@ -22,10 +22,9 @@ def get_csv_columns(file: Union[str, os.PathLike]) -> list[str]:
     return df.columns.to_list()
 
 
-def contains_defaut_cols(file: Union[str, os.PathLike]) -> bool:
+def contains_default_cols(file: Union[str, os.PathLike]) -> bool:
     file_cols = get_csv_columns(file)
-    pass
-
-
-if __name__ == "__main__":
-    print(get_csv_columns(os.path.join(INPUT_FOLDER, "ansi.csv")))
+    for col in util.config.input_cols():
+        if col not in file_cols:
+            return False
+    return True
