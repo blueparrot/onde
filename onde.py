@@ -8,7 +8,7 @@ from util.config import default_input_cols_as_text, datatypes_dict
 from util.update_geodata import update_all
 from geocode import geocode, geocode_file, SearchMode
 
-VERSION = "0.1"
+VERSION = "1.0"
 DISCLAIMER = (
     color.Fore.YELLOW
     + color.Style.BRIGHT
@@ -107,10 +107,6 @@ def main_menu() -> str:
         "Exibir aviso legal",
         "Sair",
     )
-
-
-def csv_alert() -> None:
-    print("Tem que ser UTF-8")
 
 
 def datafile_alert() -> None:
@@ -236,7 +232,32 @@ def process_file():
         col_logradouro_codigo = column_dialog("CÓDIGO DE LOGRADOURO", column_list)
         col_logradouro_cep = column_dialog("CEP", column_list)
         col_logradouro_nome = column_dialog("NOME DO LOGRADOURO", column_list)
+
+        # Check if at least one street identifier is given
+        if (
+            col_logradouro_codigo == "--- AUSENTE NESTE ARQUIVO ---"
+            and col_logradouro_cep == "--- AUSENTE NESTE ARQUIVO ---"
+            and col_logradouro_nome == "--- AUSENTE NESTE ARQUIVO ---"
+        ):
+            print(
+                color.Fore.RED
+                + "Todos os possíveis indicadores de logradouro (nome, código ou cep) foram"
+                + "apontados como AUSENTES no arquivo.\n"
+                + "Ao menos uma coluna precisa ser indicada.\n"
+            )
+            input("Pressione <ENTER> para tentar novamente...")
+            continue
+
         col_numero_imovel = column_dialog("NÚMERO DO IMÓVEL", column_list)
+
+        # Check if the address number is given
+        if col_numero_imovel == "--- AUSENTE NESTE ARQUIVO ---":
+            print(
+                color.Fore.RED
+                + "A geocodificação não é possível sem os números dos imóveis.\n"
+            )
+            input("Pressione <ENTER> para tentar novamente...")
+            continue
 
 
 def main() -> None:
