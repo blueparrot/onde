@@ -4,9 +4,9 @@ import colorama as color
 
 import util.cli as cli
 import util.file_parsing as fp
-from util.config import input_cols, datatypes_dict
+from util.config import default_input_cols_as_text, datatypes_dict
 from util.update_geodata import update_all
-from geocode import geocode, SearchMode
+from geocode import geocode, geocode_file, SearchMode
 
 VERSION = "0.1"
 DISCLAIMER = (
@@ -192,6 +192,7 @@ def process_file():
     while True:
         clear_screen()
         cli.print_title("GEOCODIFICAR ARQUIVOS")
+        use_default_cols = "NÃO"
         print(
             "Para que os arquivos CSV ou DBF apareçam entre as opções abaixo, é necessário\n"
             + "copiá-los para a pasta "
@@ -203,17 +204,30 @@ def process_file():
         selection = cli.file_selector(
             os.path.join(ABSOLUTE_PATH, "entrada"), "CSV", "DBF"
         )
+        selected_file = os.path.join(ABSOLUTE_PATH, "entrada", selection)
         if selection == "*** Atualizar lista de arquivos":
             continue
         if selection == "<<< Retornar ao menu inicial":
             break
-        if fp.contains_default_cols(os.path.join(ABSOLUTE_PATH, "entrada", selection)):
+        if fp.contains_default_cols(selected_file):
             print(
-                "As colunas "
-                + ", ".join(input_cols())
-                + " foram identificadas nesse arquivo. Utilizar a configuação padrão de parâmetros?"
+                "O arquivo indicado contém as colunas padrão:"
+                + f"{default_input_cols_as_text()}"
+                + "Utilizar a configuração padrão de parâmetros de entrada?\n"
             )
-            input("jj")
+            use_default_cols = cli.options("SIM", "NÃO")
+        if use_default_cols == "SIM":
+            geocode_file()
+
+        column_list = fp.get_columns(selected_file)
+        print(
+            "Indique a coluna que contém os "
+            + color.Fore.GREEN
+            + "CÓDIGOS DE LOGRADOURO"
+            + color.Fore.RESET
+            + ":"
+        )
+        col_codigo_logradouro = cli.column_selector(column_list)
 
 
 def main() -> None:

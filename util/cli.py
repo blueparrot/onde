@@ -55,6 +55,20 @@ def print_result(
     print(" " * indent_spacing + legend + ": " + color_fore + color_style + result)
 
 
+def column_selector(col_list: list[str]) -> tuple[str, str]:
+    """
+    Column selection menu
+    """
+    options = []
+    options.extend(["--- AUSENTE NESTE ARQUIVO ---"])
+    for col in col_list:
+        options.extend([col])
+    q = [
+        inquirer.List("option", message="", choices=options, carousel=True),
+    ]
+    return inquirer.prompt(q, theme=CustomTheme())["option"]
+
+
 def file_selector(
     folder: Union[str, os.PathLike], *filetypes: str
 ) -> Union[str, os.PathLike]:

@@ -28,13 +28,18 @@ def get_dbf_columns(file: Union[str, os.PathLike]) -> list[str]:
         return table.field_names
 
 
-def contains_default_cols(file: Union[str, os.PathLike]) -> bool:
+def get_columns(file: Union[str, os.PathLike]) -> list[str]:
     _, file_extension = os.path.splitext(file)
     if file_extension.upper() == ".CSV":
         file_cols = get_csv_columns(file)
     if file_extension.upper() == ".DBF":
         file_cols = get_dbf_columns(file)
-    for col in util.config.input_cols():
+    return file_cols
+
+
+def contains_default_cols(file: Union[str, os.PathLike]) -> bool:
+    file_cols = get_columns(file)
+    for col in util.config.default_input_cols():
         if col not in file_cols:
             return False
     return True

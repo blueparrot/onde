@@ -46,9 +46,21 @@ def datatypes_dict():
     return {e[2]: e[3] for e in unpacked_layers}
 
 
-def input_dict():
+def default_input_dict():
     return input_configuration
 
 
-def input_cols():
+def default_input_cols():
     return list(input_configuration.values())
+
+
+def default_input_cols_as_text():
+    cols = default_input_cols()
+    result = ""
+    for index, col in enumerate(cols):
+        separator = ", " if index < len(cols) else " e "
+        if index == 0:
+            result = col
+        else:
+            result = result + separator + col
+    return "\n  - " + "\n  - ".join(default_input_cols()) + "\n"
