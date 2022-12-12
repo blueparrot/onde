@@ -81,6 +81,9 @@ if os.path.isfile(DATA):
 
 
 def main_menu() -> str:
+    """
+    Shows the main menu
+    """
     cli.clear_screen()
     cli.print_title(
         f"Onde@BH v{VERSION} - Geocodificador de endereços em Belo Horizonte",
@@ -97,6 +100,9 @@ def main_menu() -> str:
 
 
 def column_dialog(col_name: str, column_list):
+    """
+    Column selection dialog
+    """
     cli.clear_screen()
     cli.print_title("GEOCODIFICAR ARQUIVOS")
     print(
@@ -110,6 +116,9 @@ def column_dialog(col_name: str, column_list):
 
 
 def datafile_alert() -> None:
+    """
+    Shows alert if address database is not detected
+    """
     print(
         color.Fore.YELLOW
         + "Alerta: "
@@ -125,6 +134,9 @@ def datafile_alert() -> None:
 
 
 def wfs_alert() -> str:
+    """
+    Shows alert about possible connection issues with WFS server
+    """
     print(
         (
             color.Fore.YELLOW
@@ -145,6 +157,9 @@ Prosseguir?\n"""
 
 
 def search_single_address() -> None:
+    """
+    Interface to search individual addresses
+    """
     while True:
         cli.clear_screen()
         cli.print_title("PESQUISA INDIVIDUAL DE ENDEREÇOS")
@@ -190,7 +205,7 @@ def search_single_address() -> None:
 
 def process_file():
     """
-    APAGAR COLUNAS QUE TENHAM MESMO NOME DE SAIDA
+    Interface to select file and set parameters to geocode
     """
     while True:
         cli.clear_screen()
@@ -336,6 +351,9 @@ def process_file():
 
 
 def main() -> None:
+    """
+    Main interface
+    """
     cli.clear_screen()
     color.init(autoreset=True)
     DEFAULT_FOLDERS = [
