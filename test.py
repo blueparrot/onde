@@ -22,4 +22,11 @@ INPUT_FOLDER = os.path.join(ABSOLUTE_PATH, ".", "entrada")
 # response = geocode(END, unique_streets, "iracy manata", "142", SearchMode.BY_NAME)
 # print(response)
 
-print(fp.contains_default_cols(os.path.join(INPUT_FOLDER, "dengue.dbf")))
+# csv_generator = fp.csv_streamer(os.path.join(INPUT_FOLDER, "dengue.csv"))
+# print(csv_generator.__next__())
+
+# dbf_generator = fp.dbf_streamer(os.path.join(INPUT_FOLDER, "dengue.dbf"))
+# print(dbf_generator.__next__())
+
+flexible_generator = fp.file_streamer(os.path.join(INPUT_FOLDER, "dengue.csv"))
+print(flexible_generator.__next__())

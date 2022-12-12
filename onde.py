@@ -215,6 +215,26 @@ def process_file():
         if selection == "<<< Retornar ao menu inicial":
             break
 
+        override_columns = "SIM"
+        if fp.contains_output_cols(selected_file):
+            print(
+                color.Fore.YELLOW
+                + "Alerta: "
+                + color.Fore.RESET
+                + "O arquivo indicado contém ao menos uma coluna com o nome igual aos que\n"
+                + "serão usados para registro do resultado da análise:\n\n"
+                + color.Fore.BLUE
+                + color.Style.BRIGHT
+                + "REGIONAL, AA, QT, BAIRRO, X, Y, LOG_LGRD, LOG_NUMR\n\n"
+                + color.Style.RESET_ALL
+                + "Para evitar que dados sejam sobrescritos, recomenda-se alterar o nome destas\n"
+                + "colunas no arquivo de entrada.\n\n"
+                + "Continuar assim mesmo?\n"
+            )
+            override_columns = cli.options("SIM", "NÃO")
+        if override_columns == "NÃO":
+            continue
+
         if fp.contains_default_cols(selected_file):
             print(
                 "O arquivo indicado contém as colunas padrão:"
@@ -250,7 +270,7 @@ def process_file():
         ):
             print(
                 color.Fore.RED
-                + "Todos os possíveis indicadores de logradouro (nome, código ou cep) foram"
+                + "Todos os possíveis indicadores de logradouro (nome, código ou cep) foram\n"
                 + "apontados como AUSENTES no arquivo.\n"
                 + "Ao menos uma coluna precisa ser indicada.\n"
             )
