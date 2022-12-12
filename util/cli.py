@@ -24,6 +24,11 @@ class CustomTheme(Default):
         self.List.selection_cursor = " >"
 
 
+def clear_screen():
+    os.system("mode con: cols=80 lines=30")
+    os.system("cls" if os.name == "nt" else "clear")
+
+
 def print_title(
     title: str, width=80, color_fore=color.Fore.BLACK, color_back=color.Back.WHITE
 ) -> None:
@@ -55,14 +60,16 @@ def print_result(
     print(" " * indent_spacing + legend + ": " + color_fore + color_style + result)
 
 
-def column_selector(col_list: list[str]) -> tuple[str, str]:
+def column_selector(col_list: list[str]) -> str:
     """
     Column selection menu
     """
     options = []
     options.extend(["--- AUSENTE NESTE ARQUIVO ---"])
+    columns = []
     for col in col_list:
-        options.extend([col])
+        columns.extend([col])
+    options.extend(sorted(columns))
     q = [
         inquirer.List("option", message="", choices=options, carousel=True),
     ]

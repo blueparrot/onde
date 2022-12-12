@@ -69,8 +69,7 @@ LOGO = """
 ABSOLUTE_PATH = os.path.dirname(__file__)
 DATA = os.path.join(ABSOLUTE_PATH, "geodata", "base_enderecos.csv")
 
-os.system("mode con: cols=80 lines=30")
-os.system("cls" if os.name == "nt" else "clear")
+cli.clear_screen()
 print(color.Fore.GREEN + color.Style.BRIGHT + LOGO + color.Style.RESET_ALL)
 
 if os.path.isfile(DATA):
@@ -81,13 +80,21 @@ if os.path.isfile(DATA):
     sp.stop()
 
 
-def clear_screen():
-    os.system("mode con: cols=80 lines=30")
-    os.system("cls" if os.name == "nt" else "clear")
+def column_dialog(col_name: str, column_list):
+    cli.clear_screen()
+    cli.print_title("GEOCODIFICAR ARQUIVOS")
+    print(
+        "Indique a coluna que contém o "
+        + color.Fore.GREEN
+        + col_name.upper()
+        + color.Fore.RESET
+        + ":"
+    )
+    return cli.column_selector(column_list)
 
 
 def main_menu() -> str:
-    clear_screen()
+    cli.clear_screen()
     cli.print_title(
         f"Onde@BH v{VERSION} - Geocodificador de endereços em Belo Horizonte",
         color_back=color.Back.GREEN,
@@ -143,7 +150,7 @@ Prosseguir?\n"""
 
 def search_single_address() -> None:
     while True:
-        clear_screen()
+        cli.clear_screen()
         cli.print_title("PESQUISA INDIVIDUAL DE ENDEREÇOS")
         print("Informe os dados do endereço a ser pesquisado:\n")
         street_name = cli.text_question("Logradouro")
@@ -190,7 +197,7 @@ def process_file():
     APAGAR COLUNAS QUE TENHAM MESMO NOME DE SAIDA
     """
     while True:
-        clear_screen()
+        cli.clear_screen()
         cli.print_title("GEOCODIFICAR ARQUIVOS")
         use_default_cols = "NÃO"
         print(
@@ -205,10 +212,13 @@ def process_file():
             os.path.join(ABSOLUTE_PATH, "entrada"), "CSV", "DBF"
         )
         selected_file = os.path.join(ABSOLUTE_PATH, "entrada", selection)
+
         if selection == "*** Atualizar lista de arquivos":
             continue
+
         if selection == "<<< Retornar ao menu inicial":
             break
+
         if fp.contains_default_cols(selected_file):
             print(
                 "O arquivo indicado contém as colunas padrão:"
@@ -216,22 +226,21 @@ def process_file():
                 + "Utilizar a configuração padrão de parâmetros de entrada?\n"
             )
             use_default_cols = cli.options("SIM", "NÃO")
+
         if use_default_cols == "SIM":
             geocode_file()
+            input("...")
+            break
 
         column_list = fp.get_columns(selected_file)
-        print(
-            "Indique a coluna que contém os "
-            + color.Fore.GREEN
-            + "CÓDIGOS DE LOGRADOURO"
-            + color.Fore.RESET
-            + ":"
-        )
-        col_codigo_logradouro = cli.column_selector(column_list)
+        col_logradouro_codigo = column_dialog("CÓDIGO DE LOGRADOURO", column_list)
+        col_logradouro_cep = column_dialog("CEP", column_list)
+        col_logradouro_nome = column_dialog("NOME DO LOGRADOURO", column_list)
+        col_numero_imovel = column_dialog("NÚMERO DO IMÓVEL", column_list)
 
 
 def main() -> None:
-    clear_screen()
+    cli.clear_screen()
     color.init(autoreset=True)
     DEFAULT_FOLDERS = [
         os.path.join(ABSOLUTE_PATH, "entrada"),
@@ -260,13 +269,13 @@ def main() -> None:
             if update_geodata == "SIM":
                 update_all()
                 if os.path.isfile(DATA):
-                    clear_screen()
+                    cli.clear_screen()
                     sp = cli.spinner("Carregando a base de endereços atualizada")
                     sp.start()
                     END = pd.read_csv(DATA, sep=";", dtype=datatypes_dict())
                     sp.stop()
         if action_choice == "Exibir aviso legal":
-            clear_screen()
+            cli.clear_screen()
             cli.print_title("AVISO LEGAL", color_back=color.Back.YELLOW)
             print(DISCLAIMER)
             input("Pressione <ENTER> para retornar ao menu inicial...")
