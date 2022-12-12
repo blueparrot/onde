@@ -1,6 +1,6 @@
 import os
 import csv
-from typing import Union
+from typing import Union, Iterator
 
 import pandas as pd
 from dbfread import DBF
@@ -53,20 +53,20 @@ def contains_default_cols(file: Union[str, os.PathLike]) -> bool:
     return True
 
 
-def csv_streamer(file: Union[str, os.PathLike]):
+def csv_streamer(file: Union[str, os.PathLike]) -> Iterator[dict[str, str]]:
     with open(file) as csvfile:
         reader = csv.DictReader(csvfile, dialect=get_csv_dialect(file))
         for row in reader:
             yield (row)
 
 
-def dbf_streamer(file: Union[str, os.PathLike]):
+def dbf_streamer(file: Union[str, os.PathLike]) -> Iterator[dict[str, str]]:
     with DBF(file) as table:
         for record in table:
             yield (dict(record))
 
 
-def file_streamer(file: Union[str, os.PathLike]):
+def file_streamer(file: Union[str, os.PathLike]) -> Iterator[dict[str, str]]:
     _, file_extension = os.path.splitext(file)
     if file_extension.upper() == ".CSV":
         streamer = csv_streamer
