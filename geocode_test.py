@@ -22,4 +22,4 @@ INPUT_FOLDER = os.path.join(ABSOLUTE_PATH, ".", "entrada")
 # response = geocode(END, unique_streets, "iracy manata", "142", SearchMode.BY_NAME)
 # print(response)
 
-print(fp.contains_defaut_cols(os.path.join(INPUT_FOLDER, "dengue.csv")))
+print(fp.contains_default_cols(os.path.join(INPUT_FOLDER, "dengue.dbf")))

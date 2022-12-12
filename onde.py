@@ -4,7 +4,7 @@ import colorama as color
 
 import util.cli as cli
 import util.file_parsing as fp
-from util.config import datatypes_dict
+from util.config import input_cols, datatypes_dict
 from util.update_geodata import update_all
 from geocode import geocode, SearchMode
 
@@ -187,17 +187,7 @@ def search_single_address() -> None:
 
 def process_file():
     """
-    Colunas padrão do SINAN:
-
-    Identificadores de logradouro:
-    NM_LOGRADO : nome logradouroi
-    NM_REFEREN : código de logradouro
-    NU_CEP : CEP
-
-    Identificador de imóvel:
-    NU_NUMERO : numero imóvel
-
-
+    APAGAR COLUNAS QUE TENHAM MESMO NOME DE SAIDA
     """
     while True:
         clear_screen()
@@ -217,12 +207,13 @@ def process_file():
             continue
         if selection == "<<< Retornar ao menu inicial":
             break
-        if selection[-3:].upper() == "CSV":
-            default_cols = fp.contains_default_cols(
-                os.path.join(ABSOLUTE_PATH, "entrada", selection)
+        if fp.contains_default_cols(os.path.join(ABSOLUTE_PATH, "entrada", selection)):
+            print(
+                "As colunas "
+                + ", ".join(input_cols())
+                + " foram identificadas nesse arquivo. Utilizar a configuação padrão de parâmetros?"
             )
-            print(f"Tem as colunas padrão: {default_cols}")
-            input(".")
+            input("jj")
 
 
 def main() -> None:
