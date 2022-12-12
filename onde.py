@@ -204,6 +204,8 @@ def process_file():
             + color.Fore.RESET
             + "\n"
         )
+
+        # File selection dialog
         selection = cli.file_selector(
             os.path.join(ABSOLUTE_PATH, "entrada"), "CSV", "DBF"
         )
@@ -215,6 +217,8 @@ def process_file():
         if selection == "<<< Retornar ao menu inicial":
             break
 
+        # Shows alert if datafile has conflicting names with columns that
+        # will be used to output geocoding result
         override_columns = "SIM"
         if fp.contains_output_cols(selected_file):
             print(
@@ -235,6 +239,7 @@ def process_file():
         if override_columns == "NÃO":
             continue
 
+        # If default columns are present, gives option to bypass some dialogs
         if fp.contains_default_cols(selected_file):
             print(
                 "O arquivo indicado contém as colunas padrão:"
@@ -242,7 +247,6 @@ def process_file():
                 + "Utilizar a configuração padrão de parâmetros de entrada?\n"
             )
             use_default_cols = cli.options("SIM", "NÃO")
-
         if use_default_cols == "SIM":
             cli.clear_screen()
             cli.print_title("GEOCODIFICAR ARQUIVOS")
@@ -257,6 +261,7 @@ def process_file():
             input("...")
             break
 
+        # Show column selection dialogs
         column_list = fp.get_columns(selected_file)
         col_street_code = column_dialog("CÓDIGO DE LOGRADOURO", column_list)
         col_street_cep = column_dialog("CEP", column_list)
@@ -288,6 +293,7 @@ def process_file():
             input("Pressione <ENTER> para tentar novamente...")
             continue
 
+        # Confirmation
         cli.clear_screen()
         cli.print_title("GEOCODIFICAR ARQUIVOS")
 
@@ -312,6 +318,7 @@ def process_file():
         print("\nProsseguir?")
         start_geocode_file = cli.options("SIM", "VOLTAR AO INÍCIO")
 
+        # Start geocoding script
         if start_geocode_file == "SIM":
             cli.clear_screen()
             cli.print_title("GEOCODIFICAR ARQUIVOS")
