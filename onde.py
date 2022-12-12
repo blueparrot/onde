@@ -4,7 +4,7 @@ import colorama as color
 
 import util.cli as cli
 import util.file_parsing as fp
-from util.config import default_input_cols_as_text, datatypes_dict
+from util.config import datatypes_dict, default_input_cols_as_text, default_input_dict
 from util.update_geodata import update_all
 from geocode import geocode, geocode_file, SearchMode
 
@@ -80,19 +80,6 @@ if os.path.isfile(DATA):
     sp.stop()
 
 
-def column_dialog(col_name: str, column_list):
-    cli.clear_screen()
-    cli.print_title("GEOCODIFICAR ARQUIVOS")
-    print(
-        "Indique a coluna que contém o "
-        + color.Fore.GREEN
-        + col_name.upper()
-        + color.Fore.RESET
-        + ":"
-    )
-    return cli.column_selector(column_list)
-
-
 def main_menu() -> str:
     cli.clear_screen()
     cli.print_title(
@@ -107,6 +94,19 @@ def main_menu() -> str:
         "Exibir aviso legal",
         "Sair",
     )
+
+
+def column_dialog(col_name: str, column_list):
+    cli.clear_screen()
+    cli.print_title("GEOCODIFICAR ARQUIVOS")
+    print(
+        "Indique a coluna que contém o "
+        + color.Fore.GREEN
+        + col_name.upper()
+        + color.Fore.RESET
+        + ":"
+    )
+    return cli.column_selector(column_list)
 
 
 def datafile_alert() -> None:
@@ -224,20 +224,29 @@ def process_file():
             use_default_cols = cli.options("SIM", "NÃO")
 
         if use_default_cols == "SIM":
-            geocode_file()
+            cli.clear_screen()
+            cli.print_title("GEOCODIFICAR ARQUIVOS")
+            default_cols = default_input_dict()
+            geocode_file(
+                file=selected_file,
+                col_street_code=default_cols["codigo_logradouro"],
+                col_street_cep=default_cols["cep"],
+                col_street_name=default_cols["nome_logradouro"],
+                col_address_number=default_cols["numero_imovel"],
+            )
             input("...")
             break
 
         column_list = fp.get_columns(selected_file)
-        col_logradouro_codigo = column_dialog("CÓDIGO DE LOGRADOURO", column_list)
-        col_logradouro_cep = column_dialog("CEP", column_list)
-        col_logradouro_nome = column_dialog("NOME DO LOGRADOURO", column_list)
+        col_street_code = column_dialog("CÓDIGO DE LOGRADOURO", column_list)
+        col_street_cep = column_dialog("CEP", column_list)
+        col_street_name = column_dialog("NOME DO LOGRADOURO", column_list)
 
         # Check if at least one street identifier is given
         if (
-            col_logradouro_codigo == "--- AUSENTE NESTE ARQUIVO ---"
-            and col_logradouro_cep == "--- AUSENTE NESTE ARQUIVO ---"
-            and col_logradouro_nome == "--- AUSENTE NESTE ARQUIVO ---"
+            col_street_code == "--- AUSENTE NESTE ARQUIVO ---"
+            and col_street_cep == "--- AUSENTE NESTE ARQUIVO ---"
+            and col_street_name == "--- AUSENTE NESTE ARQUIVO ---"
         ):
             print(
                 color.Fore.RED
@@ -248,15 +257,54 @@ def process_file():
             input("Pressione <ENTER> para tentar novamente...")
             continue
 
-        col_numero_imovel = column_dialog("NÚMERO DO IMÓVEL", column_list)
+        col_address_number = column_dialog("NÚMERO DO IMÓVEL", column_list)
 
         # Check if the address number is given
-        if col_numero_imovel == "--- AUSENTE NESTE ARQUIVO ---":
+        if col_address_number == "--- AUSENTE NESTE ARQUIVO ---":
             print(
                 color.Fore.RED
                 + "A geocodificação não é possível sem os números dos imóveis.\n"
             )
             input("Pressione <ENTER> para tentar novamente...")
+            continue
+
+        cli.clear_screen()
+        cli.print_title("GEOCODIFICAR ARQUIVOS")
+
+        print("Os seguintes parâmetros foram informados:\n")
+        print("  - Arquivo a ser geocodificado: " + color.Fore.GREEN + f"{selection}")
+        print(
+            "  - Coluna com o CÓDIGO de logradouro: "
+            + color.Fore.GREEN
+            + f"{col_street_code}"
+        )
+        print("  - Coluna com o CEP: " + color.Fore.GREEN + f"{col_street_cep}")
+        print(
+            "  - Coluna com o NOME do logradouro: "
+            + color.Fore.GREEN
+            + f"{col_street_name}"
+        )
+        print(
+            "  - Coluna com o NÚMERO do imóvel: "
+            + color.Fore.GREEN
+            + f"{col_address_number}"
+        )
+        print("\nProsseguir?")
+        start_geocode_file = cli.options("SIM", "VOLTAR AO INÍCIO")
+
+        if start_geocode_file == "SIM":
+            cli.clear_screen()
+            cli.print_title("GEOCODIFICAR ARQUIVOS")
+            geocode_file(
+                file=selected_file,
+                col_street_code=col_street_code,
+                col_street_cep=col_street_cep,
+                col_street_name=col_street_name,
+                col_address_number=col_address_number,
+            )
+            input("...")
+            break
+        if start_geocode_file == "VOLTAR AO INÍCIO":
             continue
 
 

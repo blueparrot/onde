@@ -1,4 +1,6 @@
+import os
 from enum import Enum, auto
+from typing import Union
 
 import pandas as pd
 from thefuzz import fuzz, process
@@ -160,5 +162,17 @@ def geocode(
     return {key: str(value[0]) for key, value in result.items()}
 
 
-def geocode_file():
-    print("Geocode file")
+def geocode_file(
+    *,
+    file: Union[str, os.PathLike] = None,
+    col_street_code: str = None,
+    col_street_cep: str = None,
+    col_street_name: str = None,
+    col_address_number: str = None,
+) -> None:
+    print("Geocode file!")
+    print(f"- file: {file}")
+    print(f"- code: {col_street_code}")
+    print(f"- CEP : {col_street_cep}")
+    print(f"- name: {col_street_name}")
+    print(f"- num : {col_address_number}")
