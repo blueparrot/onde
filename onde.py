@@ -236,9 +236,11 @@ def process_file():
         # will be used to output geocoding result
         override_columns = "SIM"
         if fp.contains_output_cols(selected_file):
+            cli.clear_screen()
+            cli.print_title("GEOCODIFICAR ARQUIVOS")
             print(
                 color.Fore.YELLOW
-                + "Alerta: "
+                + "\nAlerta: "
                 + color.Fore.RESET
                 + "O arquivo indicado contém ao menos uma coluna com o nome igual aos que\n"
                 + "serão usados para registro do resultado da análise:\n\n"
