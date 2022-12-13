@@ -28,7 +28,7 @@ if os.path.isfile(ADDRESS_DATA):
 # dbf_generator = fp.dbf_streamer(os.path.join(INPUT_FOLDER, "dengue.dbf"))
 # print(dbf_generator.__next__())
 
-# flexible_generator = fp.file_streamer(os.path.join(INPUT_FOLDER, "dengue.csv"))
+# flexible_generator = fp.file_streamer(os.path.join(INPUT_FOLDER, "a.csv"))
 # print(flexible_generator.__next__())
 
 input_file = os.path.join(ABSOLUTE_PATH, ".", "entrada", "dengue.csv")
@@ -38,9 +38,12 @@ geocode_file(
     file=input_file,
     # col_street_code="codigolograd",
     col_street_code="--- AUSENTE NESTE ARQUIVO ---",
-    # col_street_cep="cep",
-    col_street_cep="--- AUSENTE NESTE ARQUIVO ---",
+    col_street_cep="cep",
+    # col_street_cep="--- AUSENTE NESTE ARQUIVO ---",
     col_street_name="nomelograd",
     # col_street_name="--- AUSENTE NESTE ARQUIVO ---",
     col_address_number="numnu",
 )
+
+# for row in fp.file_streamer(os.path.join(INPUT_FOLDER, "a.csv")):
+#     print(row["DISTRITO"])

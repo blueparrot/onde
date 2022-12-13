@@ -5,6 +5,7 @@ from typing import Union
 import pandas as pd
 from thefuzz import fuzz, process
 
+import util.file_parsing as fp
 from util.street_names import standardize_street_names
 
 MAX_ADDRESS_DELTA = 50
@@ -163,7 +164,6 @@ def geocode(
 
 
 def geocode_file(
-    *,
     address_data: pd.DataFrame,
     street_list: list[str],
     file: Union[str, os.PathLike] = None,
@@ -174,11 +174,11 @@ def geocode_file(
 ) -> None:
     not_found_pool = []
 
-    # Determine search order
+    # Determine geocoding order
     street_identifiers = {
-        "BY_CODE": col_street_code,
-        "BY_CEP": col_street_cep,
-        "BY_NAME": col_street_name,
+        SearchMode.BY_CODE: col_street_code,
+        SearchMode.BY_CEP: col_street_cep,
+        SearchMode.BY_NAME: col_street_name,
     }
     search_order = [
         (mode, col)
@@ -186,4 +186,15 @@ def geocode_file(
         if col != "--- AUSENTE NESTE ARQUIVO ---"
     ]
 
-    print(search_order)
+    # Call geocoding steps
+    first_round = True
+    for _ in search_order:
+        if first_round:
+            datasource = file
+            first_round = False
+        elif len(not_found_pool) > 0:
+            datasource = not_found_pool
+        else:
+            datasource = None
+        if datasource != None:
+            print("Geo")
