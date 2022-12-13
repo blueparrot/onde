@@ -201,8 +201,9 @@ def geocode_file(
     col_street_cep: str = None,
     col_street_name: str = None,
     col_address_number: str = None,
-) -> None:
+) -> dict[str, int]:
     not_found_pool = []
+    geocode_log = {}
 
     # Determine geocoding order
     street_identifiers = {
@@ -271,6 +272,18 @@ def geocode_file(
             else:
                 break
 
-    # Put back not found rows in the result
+        # Put the rows in "not_found_pool" back to the output
+        result_not_found = {
+            "REGIONAL": "",
+            "AA": "",
+            "QT": "",
+            "BAIRRO": "",
+            "X": "",
+            "Y": "",
+            "LOG_LGRD": "Não localizado",
+            "LOG_NUMR": "Não localizado",
+        }
+        for row in not_found_pool:
+            stream.writerow(join_result(row, result_not_found))
 
-    print(f"Linhas não geocodificadas: {len(not_found_pool)}")
+    return geocode_log
