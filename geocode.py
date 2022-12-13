@@ -289,11 +289,9 @@ def geocode_file(
         for row in not_found_pool:
             stream.writerow(join_result(row, result_not_found))
     end_time = time.perf_counter()
-    elapsed_time = end_time - start_time
-    print(f"Executado em {elapsed_time} segundos")
+    elapsed_time = round(end_time - start_time, ndigits=1)
 
     # Get statistics about geocoding results
-    # , usecols=["LOG_LGRD", "LOG_NUMR"], dtype="category"
     result_df = pd.read_csv(
         output_file,
         encoding=OUTPUT_ENCODING,
@@ -301,12 +299,20 @@ def geocode_file(
         usecols=["LOG_LGRD", "LOG_NUMR"],
         dtype="category",
     )
-    print(
-        result_df["LOG_LGRD"].value_counts(), result_df["LOG_LGRD"].value_counts().sum()
-    )
-    print(
-        result_df["LOG_NUMR"].value_counts(), result_df["LOG_NUMR"].value_counts().sum()
-    )
-    stats = ""
+    streets_found = result_df["LOG_LGRD"].value_counts().to_dict()
+    addresses_found = result_df["LOG_NUMR"].value_counts().to_dict()
+    total_addresses = result_df["LOG_NUMR"].count()
+    total_found = result_df[result_df["LOG_NUMR"] != "Não localizado"][
+        "LOG_NUMR"
+    ].count()
+    stats = {
+        "streets": streets_found,
+        "addresses": addresses_found,
+        "total_found": total_found,
+        "total_addresses": total_addresses,
+        "success_rate": round(100 * total_found / total_addresses, ndigits=1),
+        "time": elapsed_time,
+    }
+    print(stats)
 
     return stats
