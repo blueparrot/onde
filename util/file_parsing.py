@@ -3,6 +3,7 @@ import csv
 from typing import Union, Iterator
 
 import pandas as pd
+import chardet
 from dbfread import DBF
 
 import util.config
@@ -11,15 +12,23 @@ ABSOLUTE_PATH = os.path.dirname(__file__)
 INPUT_FOLDER = os.path.join(ABSOLUTE_PATH, "..", "entrada")
 
 
-def get_csv_dialect(file: Union[str, os.PathLike]) -> str:
+def get_csv_separator(file: Union[str, os.PathLike]) -> str:
     with open(file, "r") as csvfile:
-        return csv.Sniffer().sniff(csvfile.readline())
+        return csv.Sniffer().sniff(csvfile.readline()).delimiter
+
+
+def get_csv_encoding(file: Union[str, os.PathLike]) -> str:
+    with open(file, "rb") as rawdata:
+        result = chardet.detect(rawdata.read(5000))
+        return result["encoding"]
 
 
 def get_csv_columns(file: Union[str, os.PathLike]) -> list[str]:
-    dialect = get_csv_dialect(file)
-    separator = dialect.delimiter
-    df = pd.read_csv(file, sep=separator, encoding_errors="ignore", nrows=1)
+    separator = get_csv_separator(file)
+    encoding = get_csv_encoding(file)
+    df = pd.read_csv(
+        file, sep=separator, encoding=encoding, encoding_errors="ignore", nrows=1
+    )
     return df.columns.to_list()
 
 
@@ -54,8 +63,8 @@ def contains_default_cols(file: Union[str, os.PathLike]) -> bool:
 
 
 def csv_streamer(file: Union[str, os.PathLike]) -> Iterator[dict[str, str]]:
-    with open(file) as csvfile:
-        reader = csv.DictReader(csvfile, dialect=get_csv_dialect(file))
+    with open(file, encoding=get_csv_encoding(file)) as csvfile:
+        reader = csv.DictReader(csvfile, delimiter=get_csv_separator(file))
         for row in reader:
             yield (row)
 
