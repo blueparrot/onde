@@ -44,11 +44,15 @@ def clean_number(text: str) -> int:
 
 
 def join_result(row: dict[str, str], geocode_result: dict[str, str]) -> list[str]:
-    output = {}
+    left_side = {}
+    right_side = {}
+    for key, value in row.items():
+        if key not in output_columns:
+            left_side[key] = value
     for key, value in geocode_result.items():
         if key in output_columns:
-            output[key] = value
-    merge = row | output
+            right_side[key] = value
+    merge = left_side | right_side
     return list(merge.values())
 
 
@@ -219,7 +223,10 @@ def geocode_file(
     # Initiate csv output
     with open(output_file, "w", newline="", encoding=OUTPUT_ENCODING) as csvfile:
         stream = csv.writer(csvfile, delimiter=";")
-        column_names = fp.get_columns(file) + output_columns
+        column_names = [
+            name for name in fp.get_columns(file) if name not in output_columns
+        ]
+        column_names.extend(output_columns)
         stream.writerow(column_names)
 
         # Call geocoding steps
