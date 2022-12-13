@@ -1,3 +1,4 @@
+import csv
 import os
 import pandas as pd
 
@@ -17,33 +18,16 @@ if os.path.isfile(ADDRESS_DATA):
     unique_streets = list(END["NOMELOGR"].sort_values().unique())
     sp.stop()
 
-# response = geocode(END, unique_streets, "125733", "142", SearchMode.BY_CODE)
-# response = geocode(END, unique_streets, "30575060", "142", SearchMode.BY_CEP)
-# response = geocode(END, unique_streets, "iracy manata", "142", SearchMode.BY_NAME)
-# print(response)
-
-# csv_generator = fp.csv_streamer(os.path.join(INPUT_FOLDER, "dengue.csv"))
-# print(csv_generator.__next__())
-
-# dbf_generator = fp.dbf_streamer(os.path.join(INPUT_FOLDER, "dengue.dbf"))
-# print(dbf_generator.__next__())
-
-# flexible_generator = fp.file_streamer(os.path.join(INPUT_FOLDER, "a.csv"))
-# print(flexible_generator.__next__())
-
-input_file = os.path.join(ABSOLUTE_PATH, ".", "entrada", "dengue.csv")
+input_file = os.path.join(ABSOLUTE_PATH, ".", "entrada", "dengue_dbf.dbf")
 geocode_file(
     END,
     unique_streets,
     file=input_file,
-    # col_street_code="codigolograd",
-    col_street_code="--- AUSENTE NESTE ARQUIVO ---",
-    col_street_cep="cep",
-    # col_street_cep="--- AUSENTE NESTE ARQUIVO ---",
-    col_street_name="nomelograd",
-    # col_street_name="--- AUSENTE NESTE ARQUIVO ---",
-    col_address_number="numnu",
+    col_street_code="NM_REFEREN",
+    # col_street_code="--- AUSENTE NESTE ARQUIVO ---",
+    # col_street_cep="NU_CEP",
+    col_street_cep="--- AUSENTE NESTE ARQUIVO ---",
+    # col_street_name="NM_LOGRADO",
+    col_street_name="--- AUSENTE NESTE ARQUIVO ---",
+    col_address_number="NU_NUMERO",
 )
-
-# for row in fp.file_streamer(os.path.join(INPUT_FOLDER, "a.csv")):
-#     print(row["DISTRITO"])

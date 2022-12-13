@@ -1,3 +1,4 @@
+import csv
 import os
 from enum import Enum, auto
 from typing import Union
@@ -5,12 +6,26 @@ from typing import Union
 import pandas as pd
 from thefuzz import fuzz, process
 
+import util.cli as cli
 import util.file_parsing as fp
 from util.street_names import standardize_street_names
+
 
 MAX_ADDRESS_DELTA = 50
 FUZZ_CUTOFF = 90
 fuzz_cache = {}
+ABSOLUTE_PATH = os.path.dirname(__file__)
+OUTPUT_FOLDER = os.path.join(ABSOLUTE_PATH, "resultado")
+output_columns = [
+    "REGIONAL",
+    "AA",
+    "QT",
+    "BAIRRO",
+    "X",
+    "Y",
+    "LOG_LGRD",
+    "LOG_NUMR",
+]
 
 
 class SearchMode(Enum):
@@ -24,6 +39,17 @@ def clean_number(text: str) -> int:
     if len(clean_text) == 0:
         return 0
     return int("".join(clean_text))
+
+
+def join_result(row: dict[str, str], result: dict[str, str]) -> list[str]:
+    keys_to_remove = []
+    for key in row.keys():
+        if key in output_columns:
+            keys_to_remove.append(key)
+    for key in keys_to_remove:
+        del row[key]
+    merge = row | result
+    return list(merge.values())
 
 
 def geocode(
@@ -50,10 +76,10 @@ def geocode(
     }
 
     def select_street_by_code(street_code: str) -> pd.DataFrame:
-        return address_data[address_data["COD_LOGR"] == int(street_code)]
+        return address_data[address_data["COD_LOGR"] == clean_number(street_code)]
 
     def select_street_by_cep(street_cep: str) -> pd.DataFrame:
-        return address_data[address_data["CEP"] == int(street_cep)]
+        return address_data[address_data["CEP"] == clean_number(street_cep)]
 
     def select_street_by_name(street_name: str) -> pd.DataFrame:
         if street_name in fuzz_cache:
@@ -176,25 +202,62 @@ def geocode_file(
 
     # Determine geocoding order
     street_identifiers = {
-        SearchMode.BY_CODE: col_street_code,
-        SearchMode.BY_CEP: col_street_cep,
-        SearchMode.BY_NAME: col_street_name,
+        SearchMode.BY_CODE: (col_street_code, "código de logradouro"),
+        SearchMode.BY_CEP: (col_street_cep, "CEP"),
+        SearchMode.BY_NAME: (col_street_name, "nome de logradouro"),
     }
     search_order = [
         (mode, col)
         for mode, col in street_identifiers.items()
-        if col != "--- AUSENTE NESTE ARQUIVO ---"
+        if col[0] != "--- AUSENTE NESTE ARQUIVO ---"
     ]
 
-    # Call geocoding steps
-    first_round = True
-    for _ in search_order:
-        if first_round:
-            datasource = file
-            first_round = False
-        elif len(not_found_pool) > 0:
-            datasource = not_found_pool
-        else:
-            datasource = None
-        if datasource != None:
-            print("Geo")
+    # Set output filename
+    basename, _ = os.path.splitext(os.path.basename(file))
+    output_file = os.path.join(OUTPUT_FOLDER, basename + ".csv")
+
+    # Initiate csv output
+    with open(output_file, "w", newline="", encoding="utf-8") as csvfile:
+        stream = csv.writer(csvfile, delimiter=";")
+        column_names = fp.get_columns(file) + output_columns
+        stream.writerow(column_names)
+
+        # Call geocoding steps
+        first_round = True
+        for step in search_order:
+            step_mode, step_column = step
+            if first_round:
+                first_round = False
+                file_streamer = fp.file_streamer(file)
+                # file_streamer.__next__()
+                sp = cli.spinner(f"Pesquisando endereços por {step_column[1]}")
+                sp.start()
+                for row in file_streamer:
+                    result = geocode(
+                        address_data,
+                        street_list,
+                        row[step_column[0]],
+                        row[col_address_number],
+                        step_mode,
+                    )
+                    if result["LOG_LGRD"] != "Não localizado":
+                        stream.writerow(join_result(row, result))
+                    else:
+                        not_found_pool.append(row)
+                sp.stop()
+            elif len(not_found_pool) > 0:
+                for row in not_found_pool:
+                    result = geocode(
+                        address_data,
+                        street_list,
+                        row[step_column[0]],
+                        row[col_address_number],
+                        step_mode,
+                    )
+                    if result["LOG_LGRD"] != "Não localizado":
+                        stream.writerow(join_result(row, result))
+                        not_found_pool.remove(row)
+            else:
+                break
+
+    print(f"Linhas não geocodificadas: {len(not_found_pool)}")

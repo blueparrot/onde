@@ -61,7 +61,7 @@ def csv_streamer(file: Union[str, os.PathLike]) -> Iterator[dict[str, str]]:
 
 
 def dbf_streamer(file: Union[str, os.PathLike]) -> Iterator[dict[str, str]]:
-    with DBF(file) as table:
+    with DBF(file, encoding="cp850") as table:
         for record in table:
             yield (dict(record))
 
