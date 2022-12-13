@@ -4,7 +4,6 @@ import requests
 from datetime import datetime
 from typing import Union
 
-# import pygeos
 import geopandas as gpd
 import colorama as color
 from owslib.wfs import WebFeatureService
@@ -13,7 +12,6 @@ import util.config
 import util.cli as cli
 from util.street_names import standardize_street_names
 
-# gpd.options.use_pygeos = True
 ABSOLUTE_PATH = os.path.dirname(__file__)
 GEODATA_FOLDER = os.path.join(ABSOLUTE_PATH, "..", "geodata")
 SPINNER_STOP_SYMBOL = color.Fore.GREEN + "  v" + color.Fore.RESET
