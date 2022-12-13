@@ -6,6 +6,8 @@ def delete_prepositions(text):
     Delete common prepositions
     """
     chunks = text.split()
+    if len(chunks) == 0:
+        return text
     prep = ("DE", "DO", "DA", "DOS", "DAS")
     for p in prep:
         while p in chunks:
@@ -18,6 +20,8 @@ def delete_street_type(text):
     Remove common street *types* from the street name
     """
     chunks = text.split()
+    if len(chunks) == 0:
+        return text
     street_types = (
         "ALAMEDA",
         "ALA",
@@ -49,6 +53,8 @@ def expand_abreviations(text):
     if len(text) == 0:
         return text
     chunks = text.split()
+    if len(chunks) == 0:
+        return text
     abrev = {
         "ALM": "ALMIRANTE",
         "ARQ": "ARQUITETO",

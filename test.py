@@ -27,7 +27,7 @@ geocode_file(
     # col_street_code="--- AUSENTE NESTE ARQUIVO ---",
     # col_street_cep="NU_CEP",
     col_street_cep="--- AUSENTE NESTE ARQUIVO ---",
-    # col_street_name="NM_LOGRADO",
-    col_street_name="--- AUSENTE NESTE ARQUIVO ---",
+    col_street_name="NM_LOGRADO",
+    # col_street_name="--- AUSENTE NESTE ARQUIVO ---",
     col_address_number="NU_NUMERO",
 )

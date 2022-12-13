@@ -252,6 +252,10 @@ def geocode_file(
                         not_found_pool.append(row)
                 sp.stop()
             elif len(not_found_pool) > 0:
+                sp = cli.spinner(
+                    f"Pesquisando endereços remanescentes por {step_column[1]}"
+                )
+                sp.start()
                 for row in not_found_pool:
                     result = geocode(
                         address_data,
@@ -263,6 +267,7 @@ def geocode_file(
                     if result["LOG_LGRD"] != "Não localizado":
                         stream.writerow(join_result(row, result))
                         not_found_pool.remove(row)
+                sp.stop()
             else:
                 break
 
