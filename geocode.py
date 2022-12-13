@@ -164,6 +164,8 @@ def geocode(
 
 def geocode_file(
     *,
+    address_data: pd.DataFrame,
+    street_list: list[str],
     file: Union[str, os.PathLike] = None,
     col_street_code: str = None,
     col_street_cep: str = None,
@@ -171,12 +173,8 @@ def geocode_file(
     col_address_number: str = None,
 ) -> None:
     not_found_pool = []
-    # street_identifiers = [col_street_code, col_street_cep, col_street_name]
-    # search_order = [
-    #     (index, col)
-    #     for index, col in enumerate(street_identifiers)
-    #     if col != "--- AUSENTE NESTE ARQUIVO ---"
-    # ]
+
+    # Determine search order
     street_identifiers = {
         "BY_CODE": col_street_code,
         "BY_CEP": col_street_cep,

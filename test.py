@@ -10,13 +10,13 @@ ABSOLUTE_PATH = os.path.dirname(__file__)
 ADDRESS_DATA = os.path.join(ABSOLUTE_PATH, "geodata", "base_enderecos.csv")
 INPUT_FOLDER = os.path.join(ABSOLUTE_PATH, ".", "entrada")
 
-# if os.path.isfile(ADDRESS_DATA):
-#     sp = cli.spinner("Carregando base de endereços")
-#     sp.start()
-#     END = pd.read_csv(ADDRESS_DATA, sep=";", dtype=datatypes_dict())
-#     unique_streets = list(END["NOMELOGR"].sort_values().unique())
-#     sp.stop()
-#
+if os.path.isfile(ADDRESS_DATA):
+    sp = cli.spinner("Carregando base de endereços")
+    sp.start()
+    END = pd.read_csv(ADDRESS_DATA, sep=";", dtype=datatypes_dict())
+    unique_streets = list(END["NOMELOGR"].sort_values().unique())
+    sp.stop()
+
 # response = geocode(END, unique_streets, "125733", "142", SearchMode.BY_CODE)
 # response = geocode(END, unique_streets, "30575060", "142", SearchMode.BY_CEP)
 # response = geocode(END, unique_streets, "iracy manata", "142", SearchMode.BY_NAME)
@@ -33,6 +33,8 @@ INPUT_FOLDER = os.path.join(ABSOLUTE_PATH, ".", "entrada")
 
 input_file = os.path.join(ABSOLUTE_PATH, ".", "entrada", "dengue.csv")
 geocode_file(
+    END,
+    unique_streets,
     file=input_file,
     # col_street_code="codigolograd",
     col_street_code="--- AUSENTE NESTE ARQUIVO ---",
