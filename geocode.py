@@ -16,6 +16,8 @@ FUZZ_CUTOFF = 90
 fuzz_cache = {}
 ABSOLUTE_PATH = os.path.dirname(__file__)
 OUTPUT_FOLDER = os.path.join(ABSOLUTE_PATH, "resultado")
+OUTPUT_ENCODING = "cp1252"
+
 output_columns = [
     "REGIONAL",
     "AA",
@@ -41,14 +43,12 @@ def clean_number(text: str) -> int:
     return int("".join(clean_text))
 
 
-def join_result(row: dict[str, str], result: dict[str, str]) -> list[str]:
-    keys_to_remove = []
-    for key in row.keys():
+def join_result(row: dict[str, str], geocode_result: dict[str, str]) -> list[str]:
+    output = {}
+    for key, value in geocode_result.items():
         if key in output_columns:
-            keys_to_remove.append(key)
-    for key in keys_to_remove:
-        del row[key]
-    merge = row | result
+            output[key] = value
+    merge = row | output
     return list(merge.values())
 
 
@@ -217,7 +217,7 @@ def geocode_file(
     output_file = os.path.join(OUTPUT_FOLDER, basename + ".csv")
 
     # Initiate csv output
-    with open(output_file, "w", newline="", encoding="utf-8") as csvfile:
+    with open(output_file, "w", newline="", encoding=OUTPUT_ENCODING) as csvfile:
         stream = csv.writer(csvfile, delimiter=";")
         column_names = fp.get_columns(file) + output_columns
         stream.writerow(column_names)
@@ -229,7 +229,6 @@ def geocode_file(
             if first_round:
                 first_round = False
                 file_streamer = fp.file_streamer(file)
-                # file_streamer.__next__()
                 sp = cli.spinner(f"Pesquisando endereços por {step_column[1]}")
                 sp.start()
                 for row in file_streamer:
@@ -259,5 +258,7 @@ def geocode_file(
                         not_found_pool.remove(row)
             else:
                 break
+
+    # Put back not found rows in the result
 
     print(f"Linhas não geocodificadas: {len(not_found_pool)}")
