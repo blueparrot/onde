@@ -1,7 +1,7 @@
 import os
 import pandas as pd
 
-from geocode import geocode, SearchMode
+from geocode import geocode, geocode_file, SearchMode
 import util.cli as cli
 import util.file_parsing as fp
 from util.config import datatypes_dict
@@ -28,5 +28,17 @@ INPUT_FOLDER = os.path.join(ABSOLUTE_PATH, ".", "entrada")
 # dbf_generator = fp.dbf_streamer(os.path.join(INPUT_FOLDER, "dengue.dbf"))
 # print(dbf_generator.__next__())
 
-flexible_generator = fp.file_streamer(os.path.join(INPUT_FOLDER, "dengue.csv"))
-print(flexible_generator.__next__())
+# flexible_generator = fp.file_streamer(os.path.join(INPUT_FOLDER, "dengue.csv"))
+# print(flexible_generator.__next__())
+
+input_file = os.path.join(ABSOLUTE_PATH, ".", "entrada", "dengue.csv")
+geocode_file(
+    file=input_file,
+    # col_street_code="codigolograd",
+    col_street_code="--- AUSENTE NESTE ARQUIVO ---",
+    # col_street_cep="cep",
+    col_street_cep="--- AUSENTE NESTE ARQUIVO ---",
+    col_street_name="nomelograd",
+    # col_street_name="--- AUSENTE NESTE ARQUIVO ---",
+    col_address_number="numnu",
+)

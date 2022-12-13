@@ -170,9 +170,22 @@ def geocode_file(
     col_street_name: str = None,
     col_address_number: str = None,
 ) -> None:
-    print("Geocode file!")
-    print(f"- file: {file}")
-    print(f"- code: {col_street_code}")
-    print(f"- CEP : {col_street_cep}")
-    print(f"- name: {col_street_name}")
-    print(f"- num : {col_address_number}")
+    not_found_pool = []
+    # street_identifiers = [col_street_code, col_street_cep, col_street_name]
+    # search_order = [
+    #     (index, col)
+    #     for index, col in enumerate(street_identifiers)
+    #     if col != "--- AUSENTE NESTE ARQUIVO ---"
+    # ]
+    street_identifiers = {
+        "BY_CODE": col_street_code,
+        "BY_CEP": col_street_cep,
+        "BY_NAME": col_street_name,
+    }
+    search_order = [
+        (mode, col)
+        for mode, col in street_identifiers.items()
+        if col != "--- AUSENTE NESTE ARQUIVO ---"
+    ]
+
+    print(search_order)
