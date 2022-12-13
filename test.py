@@ -19,15 +19,15 @@ if os.path.isfile(ADDRESS_DATA):
     unique_streets = list(END["NOMELOGR"].sort_values().unique())
     sp.stop()
 
-input_file = os.path.join(ABSOLUTE_PATH, ".", "entrada", "dengue_csv.csv")
+input_file = os.path.join(ABSOLUTE_PATH, ".", "entrada", "a.csv")
 geocode_file(
     END,
     unique_streets,
     file=input_file,
-    # col_street_code="NM_REFEREN",
-    col_street_code="--- AUSENTE NESTE ARQUIVO ---",
-    col_street_cep="NU_CEP",
-    # col_street_cep="--- AUSENTE NESTE ARQUIVO ---",
+    col_street_code="NM_REFEREN",
+    # col_street_code="--- AUSENTE NESTE ARQUIVO ---",
+    # col_street_cep="NU_CEP",
+    col_street_cep="--- AUSENTE NESTE ARQUIVO ---",
     # col_street_name="NM_LOGRADO",
     col_street_name="--- AUSENTE NESTE ARQUIVO ---",
     col_address_number="NU_NUMERO",

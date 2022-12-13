@@ -1,5 +1,6 @@
 import csv
 import os
+import time
 from enum import Enum, auto
 from typing import Union
 
@@ -204,8 +205,8 @@ def geocode_file(
     col_street_name: str = None,
     col_address_number: str = None,
 ) -> dict[str, int]:
+    start_time = time.perf_counter()
     not_found_pool = []
-    geocode_log = {}
 
     # Determine geocoding order
     street_identifiers = {
@@ -287,5 +288,25 @@ def geocode_file(
         }
         for row in not_found_pool:
             stream.writerow(join_result(row, result_not_found))
+    end_time = time.perf_counter()
+    elapsed_time = end_time - start_time
+    print(f"Executado em {elapsed_time} segundos")
 
-    return geocode_log
+    # Get statistics about geocoding results
+    # , usecols=["LOG_LGRD", "LOG_NUMR"], dtype="category"
+    result_df = pd.read_csv(
+        output_file,
+        encoding=OUTPUT_ENCODING,
+        sep=";",
+        usecols=["LOG_LGRD", "LOG_NUMR"],
+        dtype="category",
+    )
+    print(
+        result_df["LOG_LGRD"].value_counts(), result_df["LOG_LGRD"].value_counts().sum()
+    )
+    print(
+        result_df["LOG_NUMR"].value_counts(), result_df["LOG_NUMR"].value_counts().sum()
+    )
+    stats = ""
+
+    return stats
