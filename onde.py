@@ -203,6 +203,41 @@ def search_single_address() -> None:
             break
 
 
+def start_geocode_file(
+    selected_file, col_street_code, col_street_cep, col_street_name, col_address_number
+):
+    cli.clear_screen()
+    cli.print_title("GEOCODIFICAR ARQUIVOS")
+    print("                         Hora de tomar um cafezinho...")
+    print(
+        color.Fore.YELLOW
+        + """
+
+                                         )  (
+                                      (   ) )
+                                       ) ( (
+                                     _______)_
+                                  .-'---------|  
+                                 ( C|/\/\/\/\/|
+                                  '-./\/\/\/\/|
+                                    '_________'
+                                     '-------'
+    
+    """
+    )
+    geocode_log = geocode_file(
+        END,
+        unique_streets,
+        file=selected_file,
+        col_street_code=col_street_code,
+        col_street_cep=col_street_cep,
+        col_street_name=col_street_name,
+        col_address_number=col_address_number,
+    )
+    print("Terminou")
+    input("...")
+
+
 def process_file():
     """
     Interface to select file and set parameters to geocode
@@ -232,8 +267,7 @@ def process_file():
         if selection == "<<< Retornar ao menu inicial":
             break
 
-        # Shows alert if datafile has conflicting names with columns that
-        # will be used to output geocoding result
+        # Shows alert if datafile has conflicting names with columns that will be used to output geocoding result
         override_columns = "SIM"
         if fp.contains_output_cols(selected_file):
             cli.clear_screen()
@@ -265,17 +299,14 @@ def process_file():
             )
             use_default_cols = cli.options("SIM", "NÃO")
         if use_default_cols == "SIM":
-            cli.clear_screen()
-            cli.print_title("GEOCODIFICAR ARQUIVOS")
             default_cols = default_input_dict()
-            geocode_file(
-                file=selected_file,
-                col_street_code=default_cols["codigo_logradouro"],
-                col_street_cep=default_cols["cep"],
-                col_street_name=default_cols["nome_logradouro"],
-                col_address_number=default_cols["numero_imovel"],
+            start_geocode_file(
+                selected_file,
+                default_cols["codigo_logradouro"],
+                default_cols["cep"],
+                default_cols["nome_logradouro"],
+                default_cols["numero_imovel"],
             )
-            input("...")
             break
 
         # Show column selection dialogs
@@ -333,20 +364,17 @@ def process_file():
             + f"{col_address_number}"
         )
         print("\nProsseguir?")
-        start_geocode_file = cli.options("SIM", "VOLTAR AO INÍCIO")
+        start_geocoding = cli.options("SIM", "VOLTAR AO INÍCIO")
 
         # Start geocoding script
-        if start_geocode_file == "SIM":
-            cli.clear_screen()
-            cli.print_title("GEOCODIFICAR ARQUIVOS")
-            geocode_file(
-                file=selected_file,
-                col_street_code=col_street_code,
-                col_street_cep=col_street_cep,
-                col_street_name=col_street_name,
-                col_address_number=col_address_number,
+        if start_geocoding == "SIM":
+            start_geocode_file(
+                selected_file,
+                col_street_code,
+                col_street_cep,
+                col_street_name,
+                col_address_number,
             )
-            input("...")
             break
         if start_geocode_file == "VOLTAR AO INÍCIO":
             continue

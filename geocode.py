@@ -4,6 +4,7 @@ from enum import Enum, auto
 from typing import Union
 
 import pandas as pd
+import colorama as color
 from thefuzz import fuzz, process
 
 import util.cli as cli
@@ -17,6 +18,7 @@ fuzz_cache = {}
 ABSOLUTE_PATH = os.path.dirname(__file__)
 OUTPUT_FOLDER = os.path.join(ABSOLUTE_PATH, "resultado")
 OUTPUT_ENCODING = "cp1252"
+SPINNER_STOP_SYMBOL = color.Fore.GREEN + "  v" + color.Fore.RESET
 
 output_columns = [
     "REGIONAL",
@@ -251,7 +253,7 @@ def geocode_file(
                         stream.writerow(join_result(row, result))
                     else:
                         not_found_pool.append(row)
-                sp.stop()
+                sp.stop_and_persist(symbol=SPINNER_STOP_SYMBOL)
             elif len(not_found_pool) > 0:
                 sp = cli.spinner(
                     f"Pesquisando endereços remanescentes por {step_column[1]}"
@@ -268,7 +270,7 @@ def geocode_file(
                     if result["LOG_LGRD"] != "Não localizado":
                         stream.writerow(join_result(row, result))
                         not_found_pool.remove(row)
-                sp.stop()
+                sp.stop_and_persist(symbol=SPINNER_STOP_SYMBOL)
             else:
                 break
 

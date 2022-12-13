@@ -1,6 +1,7 @@
 import csv
 import os
 import pandas as pd
+import colorama as color
 
 from geocode import geocode, geocode_file, SearchMode
 import util.cli as cli
