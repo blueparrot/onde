@@ -225,7 +225,7 @@ def start_geocode_file(
     
     """
     )
-    geocode_log = geocode_file(
+    log = geocode_file(
         END,
         unique_streets,
         file=selected_file,
@@ -234,8 +234,34 @@ def start_geocode_file(
         col_street_name=col_street_name,
         col_address_number=col_address_number,
     )
-    print("Terminou")
-    input("...")
+    cli.clear_screen()
+    cli.print_title("GEOCODIFICAR ARQUIVOS")
+    print(
+        color.Fore.GREEN
+        + color.Style.BRIGHT
+        + "\n\n                    Geoprocessamento concluído com sucesso!\n\n"
+    )
+    output_file, _ = os.path.splitext(os.path.basename(selected_file))
+    output_file = os.path.join(ABSOLUTE_PATH, "resultado", output_file + ".csv")
+    print("O resultado foi salvo em " + color.Fore.GREEN + f"{output_file}\n")
+    print(color.Fore.BLACK + color.Back.WHITE + "  RELATÓRIO:  ")
+    for section, content in log.items():
+        print("\n >> " + section + ": ", end="")
+        if type(content) != dict:
+            print(color.Fore.BLUE + color.Style.BRIGHT + f"{content}", end="")
+        else:
+            for key, value in content.items():
+                print(
+                    "\n    - "
+                    + key
+                    + ": "
+                    + color.Fore.BLUE
+                    + color.Style.BRIGHT
+                    + f"{value}",
+                    end="",
+                )
+
+    input("\n\nPressione <ENTER> para retornar ao menu inicial...")
 
 
 def process_file():

@@ -306,13 +306,26 @@ def geocode_file(
         "LOG_NUMR"
     ].count()
     stats = {
-        "streets": streets_found,
-        "addresses": addresses_found,
-        "total_found": total_found,
-        "total_addresses": total_addresses,
-        "success_rate": round(100 * total_found / total_addresses, ndigits=1),
-        "time": elapsed_time,
+        "LOCALIZAÇÃO DOS LOGRADOUROS": streets_found,
+        "LOCALIZAÇÃO DOS ENDEREÇOS": addresses_found,
+        "ENDEREÇOS GEOCODIFICADOS": total_found,
+        "TOTAL DE ENDEREÇOS": total_addresses,
+        "TAXA DE SUCESSO": round(100 * total_found / total_addresses, ndigits=1),
+        "TEMPO DE PROCESSAMENTO (segundos)": elapsed_time,
     }
-    print(stats)
+
+    # Save statistics to text file
+    stats_text = ""
+    for key, value in stats.items():
+        stats_text = (
+            stats_text
+            + key
+            + ": "
+            + str(value).replace("{", "\n  - ").replace(",", "\n  - ").replace("}", "")
+            + "\n\n"
+        )
+    stats_file = os.path.join(OUTPUT_FOLDER, basename + "_log.txt")
+    with open(stats_file, "w") as f:
+        f.write(stats_text)
 
     return stats
