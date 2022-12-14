@@ -24,12 +24,13 @@ def get_csv_encoding(file: Union[str, os.PathLike]) -> str:
 
 
 def get_csv_columns(file: Union[str, os.PathLike]) -> list[str]:
-    separator = get_csv_separator(file)
-    encoding = get_csv_encoding(file)
-    df = pd.read_csv(
-        file, sep=separator, encoding=encoding, encoding_errors="ignore", nrows=1
-    )
-    return df.columns.to_list()
+    column_names = []
+    with open(file, encoding=get_csv_encoding(file)) as csvfile:
+        reader = csv.reader(csvfile, delimiter=get_csv_separator(file))
+        for row in reader:
+            column_names.append(row)
+            break
+        return column_names[0]
 
 
 def get_dbf_columns(file: Union[str, os.PathLike]) -> list[str]:
