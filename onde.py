@@ -239,7 +239,7 @@ def start_geocode_file(
     print(
         color.Fore.GREEN
         + color.Style.BRIGHT
-        + "\n\n                    Geoprocessamento concluído com sucesso!\n\n"
+        + "\n\n                     Geocodificação concluída com sucesso!\n\n"
     )
     output_file, _ = os.path.splitext(os.path.basename(selected_file))
     output_file = os.path.join(ABSOLUTE_PATH, "resultado", output_file + ".csv")
