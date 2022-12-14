@@ -44,6 +44,8 @@ O processo pode ser ligeiramente diferente a dependar da distribuição do Pytho
 
 3. Executar o comando: `python onde.py`
 
+**NOTA: Caso opte por instalar os pacotes na "raiz" do Python, sem o uso de ambiente virtual, os passos 7 e 8 da instalação e o passo 2 da execução podem ser ignorados.**
+
 ## Aviso legal
 
 O script Onde@BH não tem fins comerciais e pode ser livremente utilizado alterado e distribuído. Ele é disponibilizado com a expectativa de que seja útil, mas sem NENHUMA GARANTIA.
