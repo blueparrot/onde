@@ -30,8 +30,6 @@ def delete_street_type(text):
         "AV",
         "BECO",
         "BEC",
-        "ESTRADA",
-        "EST",
         "PRACA",
         "PCA",
         "RODOVIA",
