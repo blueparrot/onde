@@ -442,7 +442,7 @@ def main() -> None:
                     cli.clear_screen()
                     sp = cli.spinner("Carregando a base de endereços atualizada")
                     sp.start()
-                    DATA = pd.read_csv(DATA, sep=";", dtype=datatypes_dict())
+                    END = pd.read_csv(DATA, sep=";", dtype=datatypes_dict())
                     sp.stop()
         if action_choice == "Exibir aviso legal":
             cli.clear_screen()
