@@ -1,4 +1,5 @@
 import csv
+import logging
 import os
 import time
 from enum import Enum, auto
@@ -20,6 +21,7 @@ ABSOLUTE_PATH = os.path.dirname(__file__)
 OUTPUT_FOLDER = os.path.join(ABSOLUTE_PATH, "resultado")
 OUTPUT_ENCODING = "cp1252"
 SPINNER_STOP_SYMBOL = color.Fore.GREEN + "  v" + color.Fore.RESET
+logging.getLogger().setLevel(logging.ERROR)
 
 output_columns = [
     "REGIONAL",
