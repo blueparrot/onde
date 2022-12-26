@@ -443,7 +443,9 @@ def main() -> None:
                     sp = cli.spinner("Carregando a base de endereços atualizada")
                     sp.start()
                     global END
+                    global unique_streets
                     END = pd.read_csv(DATA, sep=";", dtype=datatypes_dict())
+                    unique_streets = list(END["NOMELOGR"].sort_values().unique())
                     sp.stop()
         if action_choice == "Exibir aviso legal":
             cli.clear_screen()
