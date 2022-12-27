@@ -19,7 +19,7 @@ def get_csv_separator(file: Union[str, os.PathLike]) -> str:
 
 def get_csv_encoding(file: Union[str, os.PathLike]) -> str:
     with open(file, "rb") as rawdata:
-        result = chardet.detect(rawdata.read(5000))
+        result = chardet.detect(rawdata.read(100000))
         return result["encoding"]
 
 
