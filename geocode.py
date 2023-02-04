@@ -14,7 +14,7 @@ import util.file_parsing as fp
 from util.street_names import standardize_street_names
 
 
-MAX_ADDRESS_DELTA = 50
+MAX_ADDRESS_DELTA = 100
 FUZZ_CUTOFF = 90
 fuzz_cache = {}
 ABSOLUTE_PATH = os.path.dirname(__file__)
